@@ -7,15 +7,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mojang.mojam.network.packet.ChangeKeyCommand;
-import com.mojang.mojam.network.packet.ChangeMouseButtonCommand;
-import com.mojang.mojam.network.packet.ChangeMouseCoordinateCommand;
-import com.mojang.mojam.network.packet.ChatPacket;
-import com.mojang.mojam.network.packet.ReadyNotifyPacket;
-import com.mojang.mojam.network.packet.StartGamePacket;
-import com.mojang.mojam.network.packet.StartGamePacketCustom;
-import com.mojang.mojam.network.packet.StartPregamePacket;
-import com.mojang.mojam.network.packet.TurnPacket;
+import com.mojang.mojam.network.packet.*;
 
 public abstract class Packet {
 
@@ -39,6 +31,10 @@ public abstract class Packet {
 		map(13, StartPregamePacket.class);
 		map(14, ReadyNotifyPacket.class);
 		map(15, ChatPacket.class);
+		map(16, SyncCheckPacket.class);
+		map(17, MPDataPacket.class);
+		map(18, MPPlayerPosPacket.class);
+		map(19, MPUpdateIDPacket.class);
 
 		map(100, ChangeKeyCommand.class);
 		map(101, PauseCommand.class);
@@ -56,6 +52,9 @@ public abstract class Packet {
 
 	public static void writePacket(Packet packet, DataOutputStream dos)
 			throws IOException {
+		if(packet.getId() == 0){
+			throw(new RuntimeException("BAD PACKET CLASS: "+packet.getClass().getName()));
+		}
 		dos.write(packet.getId());
 		packet.write(dos);
 	}

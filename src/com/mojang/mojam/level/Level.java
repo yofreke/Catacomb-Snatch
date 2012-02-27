@@ -33,6 +33,7 @@ public class Level {
 	public Tile[] tiles;
 	public List<Entity>[] entityMap;
 	public List<Entity> entities = new ArrayList<Entity>();
+	public List<Player> players = new ArrayList<Player>();
 	private Bitmap minimap;
 	private LevelInformation levelInfo;
 	private boolean seen[];
@@ -260,13 +261,23 @@ public class Level {
 		e.init(this);
 		entities.add(e);
 		insertToEntityMap(e);
+		if(e instanceof Player){
+			players.add((Player) e);
+		}
 	}
 
 	public void removeEntity(Entity e) {
 		e.removed = true;
 	}
+	
+	public void onRemoveEntity(Entity e){
+		if(e instanceof Player){
+			players.remove(e);
+		}
+	}
 
-	public void tick() {		
+	public void tick() {
+		////////System.out.println((MojamComponent.instance.isServer?"server":"client")+":"+tickItems.size());
 		for(int i = 0; i < tickItems.size(); i++) {
 			tickItems.get(i).tick(this);
 		}
@@ -284,7 +295,7 @@ public class Level {
 				}
 			}
 			if (e.removed) {
-				entities.remove(i--);
+				onRemoveEntity(entities.remove(i--));
 				removeFromEntityMap(e);
 			}
 		}

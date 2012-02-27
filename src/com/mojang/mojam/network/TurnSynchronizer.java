@@ -2,6 +2,7 @@ package com.mojang.mojam.network;
 
 import java.util.*;
 
+import com.mojang.mojam.MojamComponent;
 import com.mojang.mojam.network.packet.*;
 
 public class TurnSynchronizer {
@@ -61,7 +62,7 @@ public class TurnSynchronizer {
 
 		int currentTurn = turnSequence % turnInfo.length;
 		if (turnInfo[currentTurn].isDone
-				|| playerCommands.isAllDone(turnSequence)) {
+				|| playerCommands.isAllDone(turnSequence) || true) {
 			turnInfo[currentTurn].isDone = true;
 
 			if (!turnInfo[currentTurn].isCommandsPopped) {
@@ -85,7 +86,7 @@ public class TurnSynchronizer {
 	}
 
 	public synchronized void postTurn() {
-
+		
 		currentTurnTickCount++;
 		if (currentTurnTickCount >= currentTurnLength) {
 
@@ -98,6 +99,7 @@ public class TurnSynchronizer {
 
 			playerCommands.addPlayerCommands(localId, commandSequence,
 					nextTurnCommands);
+
 			sendLocalTurn(turnInfo[commandSequence % turnInfo.length]);
 			commandSequence++;
 			nextTurnCommands = null;
@@ -105,7 +107,7 @@ public class TurnSynchronizer {
 	}
 
 	public synchronized void addCommand(NetworkCommand command) {
-
+		
 		if (nextTurnCommands == null) {
 			nextTurnCommands = new ArrayList<NetworkCommand>();
 		}

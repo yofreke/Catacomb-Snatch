@@ -14,7 +14,7 @@ public class Bat extends HostileMob {
 		super(x, y, Team.Neutral);
 		setPos(x, y);
 		setStartHealth(1);
-		dir = TurnSynchronizer.synchedRandom.nextDouble() * Math.PI * 2;
+		dir = 0;//TurnSynchronizer.synchedRandom.nextDouble() * Math.PI * 2;
 		minimapColor = 0xffff0000;
 		yOffs = 5;
 		deathPoints = 1;
@@ -27,11 +27,13 @@ public class Bat extends HostileMob {
 
 		tick++;
 
-		dir += (TurnSynchronizer.synchedRandom.nextDouble() - TurnSynchronizer.synchedRandom
-				.nextDouble()) * 0.2;
-		xd += Math.cos(dir) * 1;
-		yd += Math.sin(dir) * 1;
-		
+		if(isServer()){
+			dir += (TurnSynchronizer.synchedRandom.nextDouble() - TurnSynchronizer.synchedRandom
+					.nextDouble()) * 0.2;
+			xd += Math.cos(dir) * 1;
+			yd += Math.sin(dir) * 1;
+		}
+			
 		if (shouldBounceOffWall(xd, yd)){
 			xd = -xd;
 			yd = -yd;

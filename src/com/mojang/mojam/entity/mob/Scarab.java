@@ -14,7 +14,7 @@ public class Scarab extends Mob {
 		super(x, y, Team.Neutral);
 		setPos(x, y);
 		setStartHealth(5);
-		dir = TurnSynchronizer.synchedRandom.nextDouble() * Math.PI * 2;
+		dir = rand/*TurnSynchronizer.synchedRandom*/.nextDouble() * Math.PI * 2;
 		minimapColor = 0xffff0000;
 		yOffs = 10;
 		facing = TurnSynchronizer.synchedRandom.nextInt(4);
@@ -42,7 +42,7 @@ public class Scarab extends Mob {
 			stepTime++;
 			if (!move(xd, yd)
 					|| (walkTime > 10 && TurnSynchronizer.synchedRandom
-							.nextInt(200) == 0)) {
+							.nextInt(200) == 0) && isServer()) {
 				facing = TurnSynchronizer.synchedRandom.nextInt(4);
 				walkTime = 0;
 			}

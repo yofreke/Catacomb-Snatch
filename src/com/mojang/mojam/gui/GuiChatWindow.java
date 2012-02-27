@@ -25,11 +25,11 @@ public class GuiChatWindow {
 	}
 	
 	public static String formatMessage(int playerId, String message){
-		return MojamComponent.instance.players[playerId].name + ": "+ message;
+		return MojamComponent.instance.players[0].name + ": "+ message;
 	}
 	
 	public void sendPlayerMessage(int id, String message){
-		if(component.isMultiplayer()){
+		if(component.isMP()){
 			component.packetLink.sendPacket(new ChatPacket(component.player.id, message));
 		}
 		addMessage(formatMessage(id, message));

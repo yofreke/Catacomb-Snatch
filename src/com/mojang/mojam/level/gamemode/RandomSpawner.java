@@ -2,6 +2,7 @@ package com.mojang.mojam.level.gamemode;
 
 import java.util.Random;
 
+import com.mojang.mojam.MojamComponent;
 import com.mojang.mojam.entity.Player;
 import com.mojang.mojam.entity.building.SpawnerEntity;
 import com.mojang.mojam.entity.building.Turret;
@@ -19,7 +20,7 @@ public class RandomSpawner implements ILevelTickItem {
 		Random random = TurnSynchronizer.synchedRandom;
 		int width = level.width;
 		int height = level.height;
-
+		
 		double x = (random.nextInt(width - 16) + 8) * Tile.WIDTH
 				+ Tile.WIDTH / 2;
 		double y = (random.nextInt(height - 16) + 8) * Tile.HEIGHT

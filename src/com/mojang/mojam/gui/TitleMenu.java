@@ -52,7 +52,7 @@ public class TitleMenu extends GuiMenu {
 	public static GameMode defaultGameMode= new GameModeVanilla();
 	public static DifficultyInformation difficulty = null;
 
-	public static String ip = "";
+	public static String ip = "localhost";
 
 	private int selectedItem = 0;
 	private final int gameWidth;

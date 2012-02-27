@@ -1,18 +1,31 @@
 package com.mojang.mojam.entity;
 
 import java.util.List;
+import java.util.Random;
 
+import com.mojang.mojam.MojamComponent;
 import com.mojang.mojam.entity.animation.LargeBombExplodeAnimation;
 import com.mojang.mojam.level.Level;
 import com.mojang.mojam.level.tile.Tile;
 import com.mojang.mojam.math.BB;
 import com.mojang.mojam.math.BBOwner;
 import com.mojang.mojam.math.Vec2;
+import com.mojang.mojam.network.packet.MPUpdateIDPacket;
 import com.mojang.mojam.screen.Art;
 import com.mojang.mojam.screen.Screen;
 
 public abstract class Entity implements BBOwner {
-
+	
+	protected Random rand = new Random();
+	private static short idCounter = 1;
+	private static short getNewId(){
+		short i = idCounter++;
+		if(idCounter > 32000) idCounter = 1;
+		return i;
+	}
+	public short id;
+	public short type;
+	
 	public Level level;
 	public boolean removed;
 	public Vec2 pos = new Vec2(0, 0);
@@ -27,6 +40,10 @@ public abstract class Entity implements BBOwner {
 	public int minimapIcon = -1;
 	public int minimapColor = -1;
 
+	public Entity(){
+		this.type = EntityList.classToShort(getClass());
+	}
+	
 	public void setPos(double x, double y) {
 		pos.set(x, y);
 	}
@@ -39,9 +56,30 @@ public abstract class Entity implements BBOwner {
 	public void setSize(int xr, int yr) {
 		radius.set(xr, yr);
 	}
+	
+	public void setId(){
+		if(id == 0){
+			setId(getNewId());
+		}
+	}
+	public void setId(short newId){
+		if(id == newId) return;
+		Entity e = EntityList.idToEntityMap.get(newId);
+		if(e != null){
+			e.id = 0;
+			e.setId();
+		}
+		if(MojamComponent.instance.isServer){
+			MPUpdateIDPacket.addIdChange(id, newId);
+		}
+		this.id = newId;
+		//System.out.println(type+" -> "+id);
+		EntityList.idToEntityMap.put((short) this.id, this);
+	}
 
 	public final void init(Level level) {
 		this.level = level;
+		setId();
 		init();
 	}
 
@@ -159,6 +197,7 @@ public abstract class Entity implements BBOwner {
 
 	public void remove() {
 		removed = true;
+		EntityList.idToEntityMap.put((short) this.id, null);
 	}
 
 	@Override
@@ -176,5 +215,9 @@ public abstract class Entity implements BBOwner {
 	}
 
 	public void bomb(LargeBombExplodeAnimation largeBombExplodeAnimation) {
+	}
+
+	public boolean isServer(){
+		return MojamComponent.instance.isServer();
 	}
 }

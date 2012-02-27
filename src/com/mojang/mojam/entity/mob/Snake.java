@@ -15,10 +15,10 @@ public class Snake extends HostileMob {
 		super(x, y, Team.Neutral);
 		setPos(x, y);
 		setStartHealth(3);
-		dir = TurnSynchronizer.synchedRandom.nextDouble() * Math.PI * 2;
+		dir = rand/*TurnSynchronizer.synchedRandom*/.nextDouble() * Math.PI * 2;
 		minimapColor = 0xffff0000;
 		yOffs = 10;
-		facing = TurnSynchronizer.synchedRandom.nextInt(4);
+		facing = rand/*TurnSynchronizer.synchedRandom*/.nextInt(4);
 
 		deathPoints = 2;
 	}
@@ -49,7 +49,7 @@ public class Snake extends HostileMob {
 			stepTime++;
 			if (!move(xd, yd)
 					|| (walkTime > 10 && TurnSynchronizer.synchedRandom
-							.nextInt(200) == 0)) {
+							.nextInt(200) == 0) && isServer()) {
 				facing = TurnSynchronizer.synchedRandom.nextInt(4);
 				walkTime = 0;
 			}

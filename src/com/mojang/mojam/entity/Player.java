@@ -26,7 +26,6 @@ public class Player extends Mob implements LootCollector {
     public static final int COST_REMOVE_RAIL = 15;
     public static final int REGEN_INTERVAL = 60 * 3;
     public boolean isReady;
-    public int id;
     public String name = "";
     public int plevel;
     public int pnextlevel;
@@ -68,10 +67,14 @@ public class Player extends Mob implements LootCollector {
     private int nextWalkSmokeTick = 0;
     private int regenDelay = 0;
 
+    public Player(double x, double y){
+    	this(new Keys(), new MouseButtons(), (int) x, (int) y, Team.Neutral, (short) 0);
+    }
+    
     public Player(Keys keys, MouseButtons mouseButtons, int x, int y, int team,
-    		int playerId) {
+    		short playerId) {
         super(x, y, team);
-        this.id = playerId;
+        setId(playerId);
         this.name = "PLAYERNAME"+id;
         this.keys = keys;
         this.mouseButtons = mouseButtons;
@@ -83,8 +86,8 @@ public class Player extends Mob implements LootCollector {
         pexp = 0;
         maxHealth = 5;
         health = 5;
-        psprint = 1.5;
-        maxTimeSprint = 100;
+        psprint = 2;//1.5;
+        maxTimeSprint = 99999999;//100;
 
         aimVector = new Vec2(0, 1);
 
@@ -121,7 +124,6 @@ public class Player extends Mob implements LootCollector {
 
     @Override
     public void tick() {
-
         // if mouse is in use, update player orientation before level tick
         if (!mouseButtons.mouseHidden) {
 
@@ -146,8 +148,11 @@ public class Player extends Mob implements LootCollector {
         double ya = 0;
 
         if (!dead) {
+        	if(id != MojamComponent.instance.player.id){
+        		keys.tick();
+        	}
             if (keys.up.isDown) {
-                ya--;
+            	ya--;
             }
             if (keys.down.isDown) {
                 ya++;
@@ -541,6 +546,8 @@ public class Player extends Mob implements LootCollector {
 
     @Override
     public void take(Loot loot) {
+    	if(!isServer()) return;
+    	
         loot.remove();
         level.addEntity(new Sparkle(pos.x, pos.y, -1, 0));
         level.addEntity(new Sparkle(pos.x, pos.y, +1, 0));

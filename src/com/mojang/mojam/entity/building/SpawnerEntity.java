@@ -1,5 +1,6 @@
 package com.mojang.mojam.entity.building;
 
+import com.mojang.mojam.MojamComponent;
 import com.mojang.mojam.entity.mob.*;
 import com.mojang.mojam.network.TurnSynchronizer;
 import com.mojang.mojam.level.DifficultyInformation;
@@ -30,7 +31,7 @@ public class SpawnerEntity extends Building {
 		if (freezeTime > 0)
 			return;
 
-		if (--spawnTime <= 0) {
+		if (isServer() && --spawnTime <= 0) {
 			spawn();
 			spawnTime = DifficultyInformation.calculateSpawntime(SPAWN_INTERVAL);
 		}

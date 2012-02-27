@@ -2,6 +2,8 @@ package com.mojang.mojam.level;
 
 import java.util.HashMap;
 
+import javax.management.RuntimeErrorException;
+
 import com.mojang.mojam.entity.building.TreasurePile;
 import com.mojang.mojam.entity.mob.Team;
 import com.mojang.mojam.level.tile.*;
@@ -40,20 +42,15 @@ public class TileID {
 		return tileToShortMap.get(tile.getClass());
 	}
 	
-	public static Tile shortToTile(short i, Level l, int x, int y){
-		return classToTile((Class<? extends Tile>)shortToTileMap.get(i));
+	public static Tile shortToTile(short i){
+		return classToTile(shortToTileMap.get(i));
 	}
 	
 	public static Tile classToTile(Class<? extends Tile> tileclass){
-		Tile tile = new FloorTile();
+		Tile tile = null;
 		try
         {
-            if(tileclass == UnbreakableRailTile.class){
-            	tile = (Tile)tileclass.getConstructor(new Class[] {
-            			Tile.class }).newInstance(new Object[] {
-                        		 new FloorTile() });
-            }
-            else if (tileclass != null)
+            if (tileclass != null)
             {
                 tile = (Tile)tileclass.getConstructor().newInstance();
             }
@@ -66,11 +63,12 @@ public class TileID {
 	}
 	
 	public static Tile colorToTile(int col){
-		Tile tile = new FloorTile();
-		if (col == 0xffff00) {
-			tile = null;
-		} else {
+		Tile tile = null;
+		if (col != 0xffff00) {
 			tile = classToTile(colorToTileMap.get(col));
+		} else return null;
+		if(tile == null){
+			throw(new RuntimeException("BAD TILE COLOR: "+col));
 		}
 		return tile;
 	}

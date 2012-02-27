@@ -24,6 +24,10 @@ public class Loot extends Entity {
 
 	public static int[] values = { 1, 2, 5, 10, 20, 50, 100, 200, 500 };
 
+	public Loot(double x, double y){
+		this(x, y, 0,0,0);
+	}
+	
 	public Loot(double x, double y, double xa, double ya, int val) {
 		pos.set(x, y);
 		isTakeable = true;
@@ -187,5 +191,12 @@ public class Loot extends Entity {
 
 	public int getScoreValue() {
 		return fake ? 0 : values[value];
+	}
+	
+	public int getValue(){
+		return value;
+	}
+	public void setValue(int i){
+		value = i;
 	}
 }

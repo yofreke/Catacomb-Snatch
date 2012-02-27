@@ -11,15 +11,12 @@ import com.mojang.mojam.MojamComponent;
 import com.mojang.mojam.entity.building.ShopItem;
 import com.mojang.mojam.entity.mob.Team;
 import com.mojang.mojam.level.DifficultyInformation;
-import com.mojang.mojam.level.HoleTile;
 import com.mojang.mojam.level.Level;
 import com.mojang.mojam.level.LevelInformation;
-import com.mojang.mojam.level.tile.DestroyableWallTile;
-import com.mojang.mojam.level.tile.FloorTile;
+import com.mojang.mojam.level.TileID;
 import com.mojang.mojam.level.tile.SandTile;
+import com.mojang.mojam.level.tile.Tile;
 import com.mojang.mojam.level.tile.UnbreakableRailTile;
-import com.mojang.mojam.level.tile.UnpassableSandTile;
-import com.mojang.mojam.level.tile.WallTile;
 
 public class GameMode {
 
@@ -61,6 +58,7 @@ public class GameMode {
 		
 		bufferedImage.getRGB(0, 0, w - 16, h - 16, rgbs, 8 + 8 * w, w);
 		
+		System.out.println("Process level level dim:"+w+"x"+h);
 		for (int y = 0; y < h; y++) {
 			for (int x = 0; x < w; x++) {
 				int col = rgbs[x + y * w] & 0xffffff;
@@ -89,15 +87,15 @@ public class GameMode {
 	private void darkenMap(int w, int h) {
 		for (int y = 0; y < h + 1; y++) {
 			for (int x = 0; x < w + 1; x++) {
-				if (x <= 8 || y <= 8 || x >= w - 8 || y >= h - 8) {
+				// TODO: if (x <= 8 || y <= 8 || x >= w - 8 || y >= h - 8) {
 					newLevel.getSeen()[x + y * (w + 1)] = true;
-				}
+				//}
 			}
 		}
 	}
 	
 	protected void loadColorTile(int color, int x, int y) {
-		switch (color) {
+		/*switch (color) {
 		case 0xA8A800:
 			newLevel.setTile(x, y, new SandTile());
 			break;			
@@ -120,6 +118,10 @@ public class GameMode {
 		default:
 			newLevel.setTile(x, y, new FloorTile());
 			break;
+		}*/
+		Tile tile = TileID.colorToTile(color);
+		if(tile != null){
+			newLevel.setTile(x, y, tile);
 		}
 	}
 	

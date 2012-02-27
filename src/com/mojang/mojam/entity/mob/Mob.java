@@ -13,7 +13,7 @@ public abstract class Mob extends Entity {
 
 	public final static double CARRYSPEEDMOD = 1.2;
 	public final static int MoveControlFlag = 1;
-
+	
 	// private double speed = 0.82;
 	private double speed = 1.0;
 	protected int team;
@@ -57,6 +57,9 @@ public abstract class Mob extends Entity {
 
 	public int getTeam() {
 		return team;
+	}
+	public void setTeam(int i) {
+		team = i;
 	}
 
 	public boolean isEnemyOf(Mob m) {
@@ -110,17 +113,19 @@ public abstract class Mob extends Entity {
 		// Math.sin(dir)));
 		// }
 
-		if (getDeathPoints() > 0) {
-			int loots = 4;
-			for (int i = 0; i < loots; i++) {
-				double dir = i * Math.PI * 2 / particles;
-
-				level.addEntity(new Loot(pos.x, pos.y, Math.cos(dir), Math.sin(dir), getDeathPoints()));
+		if(isServer()){
+			if (getDeathPoints() > 0) {
+				int loots = 4;
+				for (int i = 0; i < loots; i++) {
+					double dir = i * Math.PI * 2 / particles;
+	
+					level.addEntity(new Loot(pos.x, pos.y, Math.cos(dir), Math.sin(dir), getDeathPoints()));
+				}
 			}
+
+			level.addEntity(new EnemyDieAnimation(pos.x, pos.y));
 		}
-
-		level.addEntity(new EnemyDieAnimation(pos.x, pos.y));
-
+		
 		MojamComponent.soundPlayer.playSound(getDeathSound(), (float) pos.x, (float) pos.y);
 	}
 

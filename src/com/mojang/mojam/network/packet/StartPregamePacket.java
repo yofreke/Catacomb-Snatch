@@ -57,11 +57,12 @@ public class StartPregamePacket extends Packet {
 	}
 	
 	public Level getLevel() {
+		System.out.println("Pregame packet level dim:"+levelWidth+"x"+levelHeight);
 		Level level = new Level(levelWidth, levelHeight).setInfo(levelInfo);
-		for(int x = 0; x < level.width; x++){
-			for(int y = 0; y < level.width; y++){
+		for(int y = 0; y < level.height; y++){
+			for(int x = 0; x < level.width; x++){
 				int index = x + y * level.width;
-				level.setTile(x, y, TileID.shortToTile(shorts[index], level, x, y));
+				level.setTile(x, y, TileID.shortToTile(shorts[index]));
 			}
 		}
 		return level;

@@ -23,7 +23,7 @@ public class Mummy extends HostileMob {
         super(x, y, Team.Neutral);
         setPos(x, y);
         setStartHealth(7);
-        dir = TurnSynchronizer.synchedRandom.nextDouble() * Math.PI * 2;
+        dir = rand/*TurnSynchronizer.synchedRandom*/.nextDouble() * Math.PI * 2;
         minimapColor = 0xffff0000;
         yOffs = 10;
         facing = TurnSynchronizer.synchedRandom.nextInt(4);
@@ -36,26 +36,28 @@ public class Mummy extends HostileMob {
         if (freezeTime > 0) {
             return;
         }
-        tick++;
-        if (tick >= 20) {
-            tick = 0;
-            Set<Entity> entities = level.getEntities(pos.x - ATTACK_RADIUS, pos.y - ATTACK_RADIUS, pos.x + ATTACK_RADIUS, pos.y + ATTACK_RADIUS, Player.class);
-            Entity closest = null;
-            double closestDist = 99999999.0f;
-            for (Entity e : entities) {
-                final double dist = e.pos.distSqr(pos);
-                if (dist < closestDist) {
-                    closestDist = dist;
-                    closest = e;
-                }
-            }
-            if (closest != null && !this.isTargetBehindWall(closest.pos.x, closest.pos.y, closest)) {
-                chasing=true;
-                double angle = Math.atan2((closest.pos.y - pos.y), (closest.pos.x - pos.x));
-                facing = (int) Math.abs(2*(angle+(3*Math.PI/4))/Math.PI) % 4; 
-            } else {
-            	chasing=false;
-            }
+        if(isServer()){
+	        tick++;
+	        if (tick >= 20) {
+	            tick = 0;
+	            Set<Entity> entities = level.getEntities(pos.x - ATTACK_RADIUS, pos.y - ATTACK_RADIUS, pos.x + ATTACK_RADIUS, pos.y + ATTACK_RADIUS, Player.class);
+	            Entity closest = null;
+	            double closestDist = 99999999.0f;
+	            for (Entity e : entities) {
+	                final double dist = e.pos.distSqr(pos);
+	                if (dist < closestDist) {
+	                    closestDist = dist;
+	                    closest = e;
+	                }
+	            }
+	            if (closest != null && !this.isTargetBehindWall(closest.pos.x, closest.pos.y, closest)) {
+	                chasing=true;
+	                double angle = Math.atan2((closest.pos.y - pos.y), (closest.pos.x - pos.x));
+	                facing = (int) Math.abs(2*(angle+(3*Math.PI/4))/Math.PI) % 4; 
+	            } else {
+	            	chasing=false;
+	            }
+	        }
         }
         switch (facing) {
             case 0:
@@ -81,7 +83,7 @@ public class Mummy extends HostileMob {
             }
 
             stepTime++;
-            if ((!move(xd, yd) || (walkTime > 10 && TurnSynchronizer.synchedRandom.nextInt(200) == 0) && chasing==false)) {
+            if (!isServer() && (!move(xd, yd) || (walkTime > 10 && TurnSynchronizer.synchedRandom.nextInt(200) == 0) && chasing==false)) {
                 facing = TurnSynchronizer.synchedRandom.nextInt(4);
                 walkTime = 0;
             }

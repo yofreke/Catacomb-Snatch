@@ -1,7 +1,6 @@
 package com.mojang.mojam.network;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.mojang.mojam.MojamComponent;
 import com.mojang.mojam.entity.Player;
@@ -28,22 +27,18 @@ public class StreamerMP {
 		
 		if(tick-- <= 0){
 			tick = 0;
-			if(component.isServer){
-				sendToPlayer(component.players[1]);
+			if(component.isServer){				
+				for (int i = 0; i < component.level.players.size(); i++) {
+					Player player = component.level.players.get(i);
+					if(player.id == component.player.id) continue;
+					sendToPlayer(player);
+				}
 			} else {
 				sendFromPlayer(component.player);
 			}
 		}
 		
 		if(component.isServer){
-			/*for (int i = 0; i < component.players.length; i++) {
-				List<NetworkCommand> incomingCommands = playerCommands.popPlayerCommands(i, 0);
-				if (incomingCommands != null) {
-					for (NetworkCommand command : incomingCommands) {
-						commandListener.handle(i, command);
-					}
-				}
-			}*/
 			MPUpdateIDPacket.tick(component);
 		}
 	}
@@ -78,7 +73,7 @@ public class StreamerMP {
 		component.packetLink.sendPacket(new TurnPacket(component.getLocalId(), 0, localPlayerCommands));
 		
 		localPlayerCommands.clear();*/
-		component.packetLink.sendPacket(new MPPlayerPosPacket(component.player));
+		component.packetLink.sendPacket(new MPPlayerPosPacket(component.player));		
 	}
 	public void addCommand(NetworkCommand cmd){
 		localPlayerCommands.add(cmd);
@@ -87,6 +82,6 @@ public class StreamerMP {
 	public void sendToPlayer(Player player){
 		if(player == null || component.isPaused()) return;
 		MPDataPacket packet = new MPDataPacket(component, player.id);
-		component.packetLink.sendPacket(packet);
+		component.packetLink.sendPacket(packet.setClient(player.client));
 	}
 }

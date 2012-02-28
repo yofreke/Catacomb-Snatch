@@ -17,9 +17,10 @@ public class TestSynchronizer {
 		int localId = 0;
 		if (args.length > 0 && args[0].equals("server")) {
 
-			serverSocket = new ServerSocket(3000);
+			/*serverSocket = new ServerSocket(3000);
 			Socket socket = serverSocket.accept();
-			packetLink = new NetworkPacketLink(socket);
+			packetLink = new NetworkPacketLink(socket);*/
+			System.out.println("TESTSYNCHRONIZER NO LONGER IN USE");
 
 		} else {
 			packetLink = new ClientSidePacketLink("localhost", 3000);

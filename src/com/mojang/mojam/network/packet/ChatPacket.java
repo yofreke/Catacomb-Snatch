@@ -8,13 +8,13 @@ import com.mojang.mojam.network.Packet;
 
 public class ChatPacket extends Packet {
 
-	public int playerId;
+	public short playerId;
 	public String message;
 	
 	public ChatPacket(){
 	}
 	
-	public ChatPacket(int playerId, String message){
+	public ChatPacket(short playerId, String message){
 		this.playerId = playerId;
 		this.message = message;
 	}
@@ -22,13 +22,13 @@ public class ChatPacket extends Packet {
 	
 	@Override
 	public void read(DataInputStream dis) throws IOException {
-		playerId = dis.readInt();
+		playerId = dis.readShort();
 		message = dis.readUTF();
 	}
 
 	@Override
 	public void write(DataOutputStream dos) throws IOException {
-		dos.writeInt(playerId);
+		dos.writeShort(playerId);
 		dos.writeUTF(message);
 	}
 

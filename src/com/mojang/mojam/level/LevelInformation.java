@@ -161,7 +161,7 @@ public class LevelInformation {
 	public void sendMP(DataOutputStream dos) throws IOException {
 		dos.writeUTF(levelName);
 		dos.writeUTF(levelFile);
-		dos.writeBoolean(vanilla);
+		//dos.writeBoolean(vanilla);
 		dos.writeUTF(levelAuthor);
 		dos.writeUTF(levelDescription);
 	}
@@ -170,11 +170,12 @@ public class LevelInformation {
 		String levelName = dis.readUTF();
 		String levelPath = dis.readUTF();
 		System.out.println("INCOMMING: "+levelPath);
-		if(!isPathVanilla(levelPath)){
+		boolean isVanilla = isPathVanilla(levelPath);
+		if(!isVanilla){
 			int i = levelPath.lastIndexOf(seperator);
 			levelPath = "levels"+seperator+"MP"+seperator+levelPath.substring(i);
 		}
-		LevelInformation li = new LevelInformation(levelName, levelPath, dis.readBoolean());
+		LevelInformation li = new LevelInformation(levelName, levelPath, isVanilla);
 		li.setAuthor(dis.readUTF());
 		li.setDescription(dis.readUTF());
 		return li;

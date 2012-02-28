@@ -2,25 +2,36 @@ package com.mojang.mojam.entity;
 
 import java.util.Random;
 
-import com.mojang.mojam.*;
+import com.mojang.mojam.Keys;
+import com.mojang.mojam.MojamComponent;
+import com.mojang.mojam.MouseButtons;
 import com.mojang.mojam.entity.animation.EnemyDieAnimation;
 import com.mojang.mojam.entity.animation.SmokePuffAnimation;
 import com.mojang.mojam.entity.building.Building;
 import com.mojang.mojam.entity.building.Turret;
-import com.mojang.mojam.entity.loot.*;
-import com.mojang.mojam.entity.mob.*;
+import com.mojang.mojam.entity.loot.Loot;
+import com.mojang.mojam.entity.loot.LootCollector;
+import com.mojang.mojam.entity.mob.Mob;
+import com.mojang.mojam.entity.mob.RailDroid;
+import com.mojang.mojam.entity.mob.Team;
 import com.mojang.mojam.entity.particle.Sparkle;
 import com.mojang.mojam.entity.weapon.IWeapon;
 import com.mojang.mojam.entity.weapon.Rifle;
 import com.mojang.mojam.gui.Notifications;
 import com.mojang.mojam.level.HoleTile;
-import com.mojang.mojam.level.tile.*;
+import com.mojang.mojam.level.tile.RailTile;
+import com.mojang.mojam.level.tile.Tile;
 import com.mojang.mojam.math.Vec2;
+import com.mojang.mojam.network.Client;
 import com.mojang.mojam.network.TurnSynchronizer;
-import com.mojang.mojam.screen.*;
+import com.mojang.mojam.screen.Art;
+import com.mojang.mojam.screen.Bitmap;
+import com.mojang.mojam.screen.Screen;
 
 public class Player extends Mob implements LootCollector {
 
+	public Client client;
+	
     public static final int COST_RAIL = 10;
     public static final int COST_DROID = 50;
     public static final int COST_REMOVE_RAIL = 15;
@@ -88,11 +99,20 @@ public class Player extends Mob implements LootCollector {
         health = 5;
         psprint = 2;//1.5;
         maxTimeSprint = 99999999;//100;
+        isImmortal = true;
 
         aimVector = new Vec2(0, 1);
 
         score = 0;
         weapon = new Rifle(this);
+    }
+    
+    public void setId(short id){
+        MojamComponent.instance.playerMap.put(id, null);
+        
+    	super.setId(id);
+        this.name = "PLAYERNAME"+id;
+        MojamComponent.instance.playerMap.put(id, this);
     }
 
     private void checkForLevelUp() {
@@ -148,8 +168,9 @@ public class Player extends Mob implements LootCollector {
         double ya = 0;
 
         if (!dead) {
-        	if(id != MojamComponent.instance.player.id){
+        	if(id != MojamComponent.instance.player.id || !MojamComponent.instance.isServer){
         		keys.tick();
+        		mouseButtons.tick();
         	}
             if (keys.up.isDown) {
             	ya--;

@@ -7,15 +7,16 @@ import java.io.IOException;
 import com.mojang.mojam.level.Level;
 import com.mojang.mojam.level.LevelInformation;
 import com.mojang.mojam.level.TileID;
+import com.mojang.mojam.level.tile.Tile;
 import com.mojang.mojam.network.Packet;
 
 public class StartPregamePacket extends Packet {
 	
-	private long gameSeed;
+	public short id;
 	public Level level;
 	public int difficulty;
 	public int levelWidth, levelHeight;
-	public Short[] shorts;
+	public Tile[] tiles;
 	public LevelInformation levelInfo;
 	
 	public boolean doneRead;
@@ -23,22 +24,28 @@ public class StartPregamePacket extends Packet {
 	public StartPregamePacket(){
 	}
 	
-	public StartPregamePacket(long gameSeed, Level level, int difficulty){
-		this.gameSeed = gameSeed;
+	public StartPregamePacket(short id, Level level, int difficulty){
+		this.id = id;
 		this.level = level;
 		this.difficulty = difficulty;
 	}
 	
 	@Override
 	public void read(DataInputStream dis) throws IOException {
-		gameSeed = dis.readLong();
+		id = dis.readShort();
 		levelInfo = LevelInformation.readMP(dis);
 		levelWidth = dis.readInt();
 		levelHeight = dis.readInt();
 		
-		shorts = new Short[levelWidth * levelHeight];
-		for(int i = 0; i < shorts.length; i++){
-			shorts[i] = dis.readShort();
+		tiles = new Tile[levelWidth * levelHeight];
+		int numTiles = dis.readShort();
+		System.out.println("NUM TILES:"+numTiles);
+		for(int i = 0; i < numTiles; i++){
+			short id = dis.readShort();
+			short img = dis.readShort();
+			
+			tiles[i] = TileID.shortToTile(id);
+			if(tiles[i] != null) tiles[i].img = img; 
 		}
 		this.difficulty = dis.readInt();
 		doneRead = true;
@@ -46,12 +53,14 @@ public class StartPregamePacket extends Packet {
 
 	@Override
 	public void write(DataOutputStream dos) throws IOException {
-		dos.writeLong(gameSeed);
+		dos.writeShort(id);
 		level.getInfo().sendMP(dos);
 		dos.writeInt(level.width);
 		dos.writeInt(level.height);
+		dos.writeShort(level.tiles.length);
 		for(int i = 0; i < level.tiles.length; i++){
 			dos.writeShort(TileID.tileToShort(level.tiles[i]));
+			dos.writeShort(level.tiles[i].img);
 		}
 		dos.writeInt(difficulty);
 	}
@@ -62,7 +71,11 @@ public class StartPregamePacket extends Packet {
 		for(int y = 0; y < level.height; y++){
 			for(int x = 0; x < level.width; x++){
 				int index = x + y * level.width;
-				level.setTile(x, y, TileID.shortToTile(shorts[index]));
+				Tile tile = tiles[index];
+				tile.level = level;
+				tile.x = x;
+				tile.y = y;
+				level.setTile(x, y, tiles[index]);
 			}
 		}
 		return level;
@@ -70,9 +83,5 @@ public class StartPregamePacket extends Packet {
 
 	public int getDifficulty() {
 		return difficulty;
-	}
-
-	public long getGameSeed() {
-		return gameSeed;
 	}
 }

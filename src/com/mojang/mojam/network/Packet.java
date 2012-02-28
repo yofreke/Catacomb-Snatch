@@ -4,10 +4,25 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mojang.mojam.network.packet.*;
+import com.mojang.mojam.network.packet.ChangeKeyCommand;
+import com.mojang.mojam.network.packet.ChangeMouseButtonCommand;
+import com.mojang.mojam.network.packet.ChangeMouseCoordinateCommand;
+import com.mojang.mojam.network.packet.ChatPacket;
+import com.mojang.mojam.network.packet.HandshakePacket;
+import com.mojang.mojam.network.packet.HandshakeResponse;
+import com.mojang.mojam.network.packet.MPDataPacket;
+import com.mojang.mojam.network.packet.MPPlayerPosPacket;
+import com.mojang.mojam.network.packet.MPUpdateIDPacket;
+import com.mojang.mojam.network.packet.PlayerUpdatePacket;
+import com.mojang.mojam.network.packet.SetPlayerPacket;
+import com.mojang.mojam.network.packet.StartGamePacket;
+import com.mojang.mojam.network.packet.StartGamePacketCustom;
+import com.mojang.mojam.network.packet.StartPregamePacket;
+import com.mojang.mojam.network.packet.TurnPacket;
 
 public abstract class Packet {
 
@@ -29,12 +44,14 @@ public abstract class Packet {
 		map(11, TurnPacket.class);
 		map(12, StartGamePacketCustom.class);
 		map(13, StartPregamePacket.class);
-		map(14, ReadyNotifyPacket.class);
+		map(14, PlayerUpdatePacket.class);
 		map(15, ChatPacket.class);
-		map(16, SyncCheckPacket.class);
+		map(16, SetPlayerPacket.class);
 		map(17, MPDataPacket.class);
 		map(18, MPPlayerPosPacket.class);
 		map(19, MPUpdateIDPacket.class);
+		map(20, HandshakePacket.class);
+		map(21, HandshakeResponse.class);
 
 		map(100, ChangeKeyCommand.class);
 		map(101, PauseCommand.class);
@@ -42,6 +59,30 @@ public abstract class Packet {
 		map(105, ChangeMouseCoordinateCommand.class);
 	}
 
+	private InetAddress recvAddress;
+	public void setRecvAddress(InetAddress addr) { this.recvAddress = addr; }
+	public InetAddress getRecvAddress() {
+		if(recvAddress == null){
+			return NetworkPacketLink.getServerAddr();
+		}
+		return recvAddress;
+	}
+	
+	private Client client;
+	public Packet setClient(Client client) { 
+		this.client = client;
+		return this;
+	}
+	public Client getClient() { return this.client; }
+	public int getPort(){
+		if(client == null) return NetworkPacketLink.SERVER_PORT;
+		return client.port;
+	}
+	public InetAddress getWriteAddress(){
+		if(client == null) return NetworkPacketLink.getServerAddr();
+		return client.address;
+	}
+	
 	public final int getId() {
 		return classToIdMap.get(getClass());
 	}
@@ -59,7 +100,7 @@ public abstract class Packet {
 		packet.write(dos);
 	}
 
-	public static Packet readPacket(DataInputStream inputStream)
+	public static Packet readPacket(DataInputStream inputStream, InetAddress addr)
 			throws IOException {
 
 		int id = 0;
@@ -69,11 +110,12 @@ public abstract class Packet {
 			id = inputStream.read();
 			if (id == -1)
 				return null;
-
+			
 			packet = getPacket(id);
 			if (packet == null)
 				throw new IOException("Bad packet id " + id);
 
+			packet.setRecvAddress(addr);
 			packet.read(inputStream);
 
 		} catch (EOFException e) {

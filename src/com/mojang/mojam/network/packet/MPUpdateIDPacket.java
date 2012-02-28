@@ -36,9 +36,9 @@ public class MPUpdateIDPacket extends Packet {
 			short o = dis.readShort();
 			short n = dis.readShort();
 			Entity e = EntityList.idToEntityMap.get(o);
-			System.out.println(o+" >> "+n);
+			//System.out.println(o+" >> "+n);
 			if(e == null){
-				System.out.println("  null");
+				//System.out.println("  null");
 				continue;
 			}
 			e.setId(n);

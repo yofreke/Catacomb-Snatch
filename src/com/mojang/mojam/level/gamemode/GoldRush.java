@@ -1,6 +1,5 @@
 package com.mojang.mojam.level.gamemode;
 
-import com.mojang.mojam.MojamComponent;
 import com.mojang.mojam.level.Level;
 
 public class GoldRush implements IVictoryConditions {
@@ -10,10 +9,10 @@ public class GoldRush implements IVictoryConditions {
 	
 	@Override
 	public void updateVictoryConditions(Level level) {
-		if(MojamComponent.instance.players[0] != null)
-			level.player1Score = MojamComponent.instance.players[0].score;
-		if(MojamComponent.instance.players[1] != null)
-			level.player2Score = MojamComponent.instance.players[1].score;
+		if(level.players.get(0) != null)
+			level.player1Score = level.players.get(0).score;
+		if(level.players.get(1) != null)
+			level.player2Score = level.players.get(1).score;
 		
 		if (level.player1Score >= level.TARGET_SCORE) {
         	bVictoryAchieved = true;

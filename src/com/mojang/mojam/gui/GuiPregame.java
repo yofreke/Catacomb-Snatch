@@ -91,11 +91,11 @@ public class GuiPregame extends GuiMenu {
 		Font.draw(screen, "Author:", leftMargin, 50);
 		Font.draw(screen, "Desc:", leftMargin, 60);
 		Font.draw(screen, "Players", leftMargin/2, 155);
-		for(int i = 0; i < component.players.length; i++){
-			Player player = component.players[i];
+		for(int i = 0; i < component.level.players.size(); i++){
+			Player player = component.level.players.get(i);
 			if(player.isReady) Font.setFont("");
 			else Font.setFont("red");
-			Font.draw(screen, component.players[i].name, leftMargin, 165+i*10);
+			Font.draw(screen, (player.id==component.player.id?"-":"")+player.name+" "+player.getTeam(), leftMargin, 165+i*10);
 		}
 		Font.setFont("blue");
 		LevelInformation li = level.getInfo();

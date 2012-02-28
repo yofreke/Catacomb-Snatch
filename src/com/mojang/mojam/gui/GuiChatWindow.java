@@ -3,6 +3,7 @@ package com.mojang.mojam.gui;
 import java.awt.event.KeyEvent;
 
 import com.mojang.mojam.MojamComponent;
+import com.mojang.mojam.network.Packet;
 import com.mojang.mojam.network.packet.ChatPacket;
 import com.mojang.mojam.screen.Screen;
 
@@ -14,7 +15,7 @@ public class GuiChatWindow {
 	public String[] messages;
 	public int toDraw = 0;
 	public int decreaseTimer = 0;
-	public int decreaseTimerMax = 450;
+	public int decreaseTimerMax = 350;
 	public boolean isActive;
 	private String entry = "";
 	long lastActive = 0;
@@ -24,13 +25,15 @@ public class GuiChatWindow {
 		messages = new String[maxMessages];
 	}
 	
-	public static String formatMessage(int playerId, String message){
-		return MojamComponent.instance.players[0].name + ": "+ message;
+	public static String formatMessage(short playerId, String message){
+		return MojamComponent.instance.getPlayer(playerId).name + ": "+ message;
 	}
 	
-	public void sendPlayerMessage(int id, String message){
+	public void sendPlayerMessage(short id, String message){
 		if(component.isMP()){
-			component.packetLink.sendPacket(new ChatPacket(component.player.id, message));
+			Packet packet = new ChatPacket(component.player.id, message);
+			if(component.isServer) component.broadcastPacket(packet);
+			else component.packetLink.sendPacket(packet);
 		}
 		addMessage(formatMessage(id, message));
 	}

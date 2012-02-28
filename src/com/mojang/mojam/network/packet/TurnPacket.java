@@ -45,7 +45,7 @@ public class TurnPacket extends Packet {
 			list = new ArrayList<NetworkCommand>();
 			for (int i = 0; i < count; i++) {
 				NetworkCommand command = (NetworkCommand) Packet
-						.readPacket(dis);
+						.readPacket(dis, getRecvAddress());
 				if (command == null) {
 					throw new IOException("Error reading command from player "
 							+ playerId + " at turn " + turnNumber);

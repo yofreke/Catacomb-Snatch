@@ -65,7 +65,8 @@ public abstract class Entity implements BBOwner {
 	public void setId(short newId){
 		if(id == newId) return;
 		Entity e = EntityList.idToEntityMap.get(newId);
-		if(e != null){
+		if(e != null && !e.equals(this)){
+			System.out.println("ID conflict: "+id+"->"+newId+" "+this+","+e);
 			e.id = 0;
 			e.setId();
 		}

@@ -21,12 +21,12 @@ import com.mojang.mojam.network.Packet;
 public class MPDataPacket extends Packet {
 	
 	public MojamComponent component;
-	public int playerId;
+	public short playerId;
 	
 	public MPDataPacket(){
 		this.component = MojamComponent.instance;
 	}
-	public MPDataPacket(MojamComponent component, int playerId){
+	public MPDataPacket(MojamComponent component, short playerId){
 		this.component = component;
 		this.playerId = playerId;
 	}
@@ -71,13 +71,13 @@ public class MPDataPacket extends Packet {
 		}
 	    
 	    if(System.currentTimeMillis() % 1000 < 30){
-	    	//System.out.println("Recieve done, "+size+" OF "+component.level.entities.size());
+	    	System.out.println("Recieve done, "+size+" OF "+component.level.entities.size());
 	    }
 	}
 	
 	@Override
 	public void write(DataOutputStream dos) throws IOException {
-		Player player = component.players[playerId];
+		Player player = component.getPlayer(playerId);
 		int xScroll = (int) (player.pos.x - MojamComponent.GAME_WIDTH / 2);
 		int yScroll = (int) (player.pos.y - (MojamComponent.GAME_HEIGHT - 24) / 2);
 		Set<Entity> visibleEntities = component.level.getEntities(xScroll - Tile.WIDTH, yScroll

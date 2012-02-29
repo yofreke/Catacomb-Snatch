@@ -5,6 +5,7 @@ import java.util.Random;
 
 import com.mojang.mojam.MojamComponent;
 import com.mojang.mojam.entity.animation.LargeBombExplodeAnimation;
+import com.mojang.mojam.gui.Font;
 import com.mojang.mojam.level.Level;
 import com.mojang.mojam.level.tile.Tile;
 import com.mojang.mojam.math.BB;
@@ -17,18 +18,29 @@ import com.mojang.mojam.screen.Screen;
 public abstract class Entity implements BBOwner {
 	
 	protected Random rand = new Random();
-	private static short idCounter = 1;
+	// 0-1000 Players
+	// 1000-15000 Server
+	// 15000-32000 Client
+	private static short idCounter = -1;
 	private static short getNewId(){
-		short i = idCounter++;
-		if(idCounter > 32000) idCounter = 1;
+		if(idCounter < 0){
+			idCounter = (short) (MojamComponent.instance.isServer() ? 1000 : 15000);
+			System.out.println("Entity .. idCounter set = "+idCounter);
+		}
+		short i = idCounter;
+		if(++idCounter > (MojamComponent.instance.isServer() ? 15000 : 32000)){
+			idCounter = (short) (MojamComponent.instance.isServer() ? 1000 : 15000);
+		}
 		return i;
 	}
 	public short id;
 	public short type;
+	public boolean needSend = true;
 	
 	public Level level;
 	public boolean removed;
 	public Vec2 pos = new Vec2(0, 0);
+	public Vec2 prevPos = new Vec2(0, 0);
 	public Vec2 radius = new Vec2(10, 10);
 
 	public boolean isBlocking = true;
@@ -36,7 +48,8 @@ public abstract class Entity implements BBOwner {
 
 	public int xto;
 	public int yto;
-	public double xd, yd;
+	public double xd, yd; // velocity
+	public double prevXd, prevYd; // velocity
 	public int minimapIcon = -1;
 	public int minimapColor = -1;
 
@@ -66,16 +79,17 @@ public abstract class Entity implements BBOwner {
 		if(id == newId) return;
 		Entity e = EntityList.idToEntityMap.get(newId);
 		if(e != null && !e.equals(this)){
-			System.out.println("ID conflict: "+id+"->"+newId+" "+this+","+e);
+			System.out.println("ID conflict: "+id+"->"+newId+" "+MojamComponent.cleanClassName(this.getClass().getName())
+					+","+MojamComponent.cleanClassName(e.getClass().getName()));
 			e.id = 0;
 			e.setId();
 		}
-		if(MojamComponent.instance.isServer){
+		EntityList.idToEntityMap.put(this.id, null);
+		/*if(MojamComponent.instance.isServer){
 			MPUpdateIDPacket.addIdChange(id, newId);
-		}
+		}*/
 		this.id = newId;
-		//System.out.println(type+" -> "+id);
-		EntityList.idToEntityMap.put((short) this.id, this);
+		EntityList.idToEntityMap.put(this.id, this);
 	}
 
 	public final void init(Level level) {
@@ -90,6 +104,12 @@ public abstract class Entity implements BBOwner {
 	public void tick() {
 	}
 
+	public void postTick(){
+		prevXd = xd;
+		prevYd = yd;
+		prevPos.set(pos.x, pos.y);
+	}
+	
 	public boolean intersects(double xx0, double yy0, double xx1, double yy1) {
 		return getBB().intersects(xx0, yy0, xx1, yy1);
 	}

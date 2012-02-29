@@ -5,6 +5,7 @@ import com.mojang.mojam.entity.*;
 import com.mojang.mojam.entity.animation.EnemyDieAnimation;
 import com.mojang.mojam.entity.building.SpawnerEntity;
 import com.mojang.mojam.entity.loot.Loot;
+import com.mojang.mojam.gui.Font;
 import com.mojang.mojam.math.Vec2;
 import com.mojang.mojam.level.tile.Tile;
 import com.mojang.mojam.screen.*;

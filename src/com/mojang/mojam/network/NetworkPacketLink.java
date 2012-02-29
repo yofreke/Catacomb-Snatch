@@ -17,7 +17,7 @@ import com.mojang.mojam.network.packet.MPPlayerPosPacket;
 
 public class NetworkPacketLink implements PacketLink {
 
-	public static final int BUFF_SMALL = 1024;
+	public static final int BUFF_SMALL = 1024 * 5;
 	public static final int BUFF_BIG = 1024 * 24;
 	
 	public static volatile int SEND_BUFFER_SIZE = 512;//1024 * 6;
@@ -152,7 +152,7 @@ public class NetworkPacketLink implements PacketLink {
 				}
 				didSomething = true;
 			} else {
-				System.out.println("null packet");
+				System.out.println("null packet (nom nom... MOAR BUFFER)");
 			}
 		} catch (Exception e) {
 			if (!isDisconnected)

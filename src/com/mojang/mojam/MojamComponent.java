@@ -176,12 +176,12 @@ public class MojamComponent extends Canvas implements Runnable,
 	public short getUniquePlayerId(){
 		short id;
 		do {
-			id = (short) rand.nextInt(32000);
+			id = (short) rand.nextInt(1000);
 		} while(playerMap.containsKey(id));
 		return id;
 	}
 	public Player generatePlayer(int team, Keys keys, MouseButtons mouseButtons){
-		if(team < 0) team = 1+rand.nextInt(2);
+		if(team < 0) team = 1;// TODO: +rand.nextInt(2);
 		int x = team == 1 ? level.width * Tile.WIDTH / 2 - 16 : level.width * Tile.WIDTH / 2 - 16;
 		int y = team == 1 ? (level.height - 5 - 1) * Tile.HEIGHT - 16 : 7 * Tile.HEIGHT - 16;
 		
@@ -1064,6 +1064,13 @@ public class MojamComponent extends Canvas implements Runnable,
 
 	public int getLocalId() { return localId; }
 	public void setLocalId(int id) { localId = id; }
+	public static String cleanClassName(String s){
+		int i = s.lastIndexOf(".");
+		if(i >= 0) {
+			return s.substring(i);
+		}
+		return s;
+	}
 	
 	public boolean isServer(){
 		return !isMP() || isServer;

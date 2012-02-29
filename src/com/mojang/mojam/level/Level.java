@@ -286,6 +286,7 @@ public class Level {
 			Entity e = entities.get(i);
 			if (!e.removed) {
 				e.tick();
+				e.postTick();
 
 				int xtn = (int) (e.pos.x - e.radius.x) / Tile.WIDTH;
 				int ytn = (int) (e.pos.y - e.radius.y) / Tile.HEIGHT;

@@ -48,10 +48,10 @@ public class Snake extends HostileMob {
 			
 			stepTime++;
 			if (!move(xd, yd)
-					|| (walkTime > 10 && TurnSynchronizer.synchedRandom
-							.nextInt(200) == 0) && isServer()) {
-				facing = TurnSynchronizer.synchedRandom.nextInt(4);
+					|| (walkTime > 10 && rand.nextInt(200) == 0) && isServer()) {
+				facing = rand.nextInt(4);
 				walkTime = 0;
+				needSend = true;
 			}
 		}
 		xd *= 0.2;

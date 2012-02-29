@@ -1,47 +1,63 @@
 package com.mojang.mojam.entity.mob;
 
+import java.util.Random;
+
 import com.mojang.mojam.entity.Entity;
 import com.mojang.mojam.level.DifficultyInformation;
-import com.mojang.mojam.network.TurnSynchronizer;
 import com.mojang.mojam.screen.Art;
 import com.mojang.mojam.screen.Bitmap;
 import com.mojang.mojam.screen.Screen;
 
 public class Bat extends HostileMob {
 	private int tick = 0;
-
+	
+	private long brSeed;
+	private Random batRand;
+	
 	public Bat(double x, double y) {
 		super(x, y, Team.Neutral);
 		setPos(x, y);
 		setStartHealth(1);
-		dir = 0;//TurnSynchronizer.synchedRandom.nextDouble() * Math.PI * 2;
+		dir = rand.nextDouble() * Math.PI * 2;
 		minimapColor = 0xffff0000;
 		yOffs = 5;
 		deathPoints = 1;
+		
+		batRand = new Random();
+		setBRSeed(rand.nextLong());
 	}
 
+	public void setBRSeed(long l){
+		this.brSeed = l;
+		batRand.setSeed(brSeed);
+	}
+	public long getBRSeed(){
+		return brSeed;
+	}
+	
 	public void tick() {
 		super.tick();
 		if (freezeTime > 0)
 			return;
 
 		tick++;
-
-		if(isServer()){
-			dir += (TurnSynchronizer.synchedRandom.nextDouble() - TurnSynchronizer.synchedRandom
-					.nextDouble()) * 0.2;
-			xd += Math.cos(dir) * 1;
-			yd += Math.sin(dir) * 1;
+		if(isServer() && tick % 180 == 0){
+			setBRSeed(rand.nextLong());
+			needSend = true;
 		}
+
+		dir += (batRand.nextDouble() - batRand.nextDouble()) * 0.2;
+		xd += Math.cos(dir) * 1;
+		yd += Math.sin(dir) * 1;
 			
 		if (shouldBounceOffWall(xd, yd)){
 			xd = -xd;
 			yd = -yd;
 		}
 		
-		if (!move(xd, yd)) {
-			dir += (TurnSynchronizer.synchedRandom.nextDouble() - TurnSynchronizer.synchedRandom
-					.nextDouble()) * 0.8;
+		if (!move(xd, yd) && isServer()) {
+			dir += (batRand.nextDouble() - batRand.nextDouble()) * 0.8;
+			needSend = true;
 		}
 		xd *= 0.2;
 		yd *= 0.2;

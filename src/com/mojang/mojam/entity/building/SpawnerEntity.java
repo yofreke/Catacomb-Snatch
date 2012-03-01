@@ -14,6 +14,9 @@ public class SpawnerEntity extends Building {
 
 	public int type;
 
+	public SpawnerEntity(double x, double y) {
+		this(0,0,0,-1);
+	}
 	public SpawnerEntity(double x, double y, int team, int type) {
 		super(x, y, team);
 

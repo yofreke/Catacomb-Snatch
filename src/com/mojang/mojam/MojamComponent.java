@@ -31,6 +31,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import com.mojang.mojam.entity.Entity;
 import com.mojang.mojam.entity.Player;
 import com.mojang.mojam.entity.building.Base;
 import com.mojang.mojam.entity.mob.Team;
@@ -949,6 +950,14 @@ public class MojamComponent extends Canvas implements Runnable,
 			chatWindow.onKeyPress(e);
 		} else if (!menuStack.isEmpty()) {
 			menuStack.peek().keyPressed(e);
+		}
+		
+		if(e.getKeyCode() == KeyEvent.VK_F4){
+			chatWindow.addMessage("SYS: "+level.entities.size()+" entities");
+			for(Entity en : level.entities){
+				if(en instanceof Player) continue;
+				en.remove();
+			}
 		}
 	}
 

@@ -43,7 +43,6 @@ public class Bat extends HostileMob {
 		tick++;
 		if(isServer() && tick % 180 == 0){
 			setBRSeed(rand.nextLong());
-			needSend = true;
 		}
 
 		dir += (batRand.nextDouble() - batRand.nextDouble()) * 0.2;
@@ -57,7 +56,6 @@ public class Bat extends HostileMob {
 		
 		if (!move(xd, yd) && isServer()) {
 			dir += (batRand.nextDouble() - batRand.nextDouble()) * 0.8;
-			needSend = true;
 		}
 		xd *= 0.2;
 		yd *= 0.2;

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.mojang.mojam.MojamComponent;
+import com.mojang.mojam.entity.building.SpawnerEntity;
 import com.mojang.mojam.entity.loot.Loot;
 import com.mojang.mojam.entity.mob.*;
 
@@ -18,12 +19,14 @@ public class EntityList {
 	static {
 		//registerEntity((short) 1, Player.class);
 		registerEntity((short) 11, Bat.class);
-		//registerEntity((short) 12, Mummy.class);
+		registerEntity((short) 12, Mummy.class);
 		//registerEntity((short) 13, RailDroid.class);
 		//registerEntity((short) 14, Scarab.class);
 		registerEntity((short) 15, Snake.class);
-
-		//registerEntity((short) 30, Loot.class);
+		
+		registerEntity((short) 30, Loot.class);
+		registerEntity((short) 31, Bullet.class);
+		registerEntity((short) 32, SpawnerEntity.class);
 	}
 	
 	public static void registerEntity(short id, Class<? extends Entity> mobclass){

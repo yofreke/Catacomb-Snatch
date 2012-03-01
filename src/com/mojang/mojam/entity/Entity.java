@@ -5,13 +5,11 @@ import java.util.Random;
 
 import com.mojang.mojam.MojamComponent;
 import com.mojang.mojam.entity.animation.LargeBombExplodeAnimation;
-import com.mojang.mojam.gui.Font;
 import com.mojang.mojam.level.Level;
 import com.mojang.mojam.level.tile.Tile;
 import com.mojang.mojam.math.BB;
 import com.mojang.mojam.math.BBOwner;
 import com.mojang.mojam.math.Vec2;
-import com.mojang.mojam.network.packet.MPUpdateIDPacket;
 import com.mojang.mojam.screen.Art;
 import com.mojang.mojam.screen.Screen;
 
@@ -21,21 +19,25 @@ public abstract class Entity implements BBOwner {
 	// 0-1000 Players
 	// 1000-15000 Server
 	// 15000-32000 Client
-	private static short idCounter = -1;
+	private static short idCounter_c = 15000, idCounter_s = 1000;
 	private static short getNewId(){
-		if(idCounter < 0){
-			idCounter = (short) (MojamComponent.instance.isServer() ? 1000 : 15000);
-			System.out.println("Entity .. idCounter set = "+idCounter);
-		}
-		short i = idCounter;
-		if(++idCounter > (MojamComponent.instance.isServer() ? 15000 : 32000)){
-			idCounter = (short) (MojamComponent.instance.isServer() ? 1000 : 15000);
+		short i;
+		if(MojamComponent.instance.isServer()){
+			i = idCounter_s;
+			if(++idCounter_s > 15000){
+				idCounter_s = (short) (1000);
+			}
+		} else {
+			i = idCounter_c;
+			if(++idCounter_c > 32000){
+				idCounter_c = (short) (15000);
+			}
 		}
 		return i;
 	}
 	public short id;
 	public short type;
-	public boolean needSend = true;
+	public int age;
 	
 	public Level level;
 	public boolean removed;
@@ -108,6 +110,10 @@ public abstract class Entity implements BBOwner {
 		prevXd = xd;
 		prevYd = yd;
 		prevPos.set(pos.x, pos.y);
+
+		if(!isServer() && age++ > 2 && id < 15000 && this.id != MojamComponent.instance.player.id){
+			remove();
+		}
 	}
 	
 	public boolean intersects(double xx0, double yy0, double xx1, double yy1) {

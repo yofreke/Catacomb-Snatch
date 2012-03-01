@@ -51,7 +51,6 @@ public class Snake extends HostileMob {
 					|| (walkTime > 10 && rand.nextInt(200) == 0) && isServer()) {
 				facing = rand.nextInt(4);
 				walkTime = 0;
-				needSend = true;
 			}
 		}
 		xd *= 0.2;

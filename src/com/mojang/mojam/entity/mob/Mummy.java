@@ -23,10 +23,10 @@ public class Mummy extends HostileMob {
         super(x, y, Team.Neutral);
         setPos(x, y);
         setStartHealth(7);
-        dir = rand/*TurnSynchronizer.synchedRandom*/.nextDouble() * Math.PI * 2;
+        dir = rand.nextDouble() * Math.PI * 2;
         minimapColor = 0xffff0000;
         yOffs = 10;
-        facing = TurnSynchronizer.synchedRandom.nextInt(4);
+        facing = rand.nextInt(4);
 
         deathPoints = 4;
     }
@@ -83,8 +83,8 @@ public class Mummy extends HostileMob {
             }
 
             stepTime++;
-            if (!isServer() && (!move(xd, yd) || (walkTime > 10 && TurnSynchronizer.synchedRandom.nextInt(200) == 0) && chasing==false)) {
-                facing = TurnSynchronizer.synchedRandom.nextInt(4);
+            if (isServer() && (!move(xd, yd) || (walkTime > 10 && rand.nextInt(200) == 0) && chasing==false)) {
+                facing = rand.nextInt(4);
                 walkTime = 0;
             }
         }

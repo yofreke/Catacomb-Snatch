@@ -1,10 +1,12 @@
 package com.mojang.mojam.entity.loot;
 
 import com.mojang.mojam.MojamComponent;
-import com.mojang.mojam.entity.*;
-import com.mojang.mojam.network.TurnSynchronizer;
-import com.mojang.mojam.screen.*;
+import com.mojang.mojam.entity.Entity;
+import com.mojang.mojam.entity.Player;
 import com.mojang.mojam.level.HoleTile;
+import com.mojang.mojam.screen.Art;
+import com.mojang.mojam.screen.Bitmap;
+import com.mojang.mojam.screen.Screen;
 
 public class Loot extends Entity {
 	public double xa, ya, za;
@@ -36,30 +38,31 @@ public class Loot extends Entity {
 		while (value < 8 && values[value] < val)
 			value++;
 
-		if (TurnSynchronizer.synchedRandom.nextInt(3) == 0)
-			value++;
-		if (TurnSynchronizer.synchedRandom.nextInt(3) == 0)
-			value++;
-		if (value > 8)
-			value = 8;
-
-		// value = TurnSynchronizer.synchedRandom.nextInt(9);
-		double pow = TurnSynchronizer.synchedRandom.nextDouble() * 1 + 1;
+		if(isServer()){
+			if (rand.nextInt(3) == 0)
+				value++;
+			if (rand.nextInt(3) == 0)
+				value++;
+			if (value > 8)
+				value = 8;
+		}
+		
+		// value = rand.nextInt(9);
+		double pow = rand.nextDouble() * 1 + 1;
 		this.xa = xa * pow;
 		this.ya = ya * pow;
-		this.za = TurnSynchronizer.synchedRandom.nextDouble() * 2 + 1.0;
+		this.za = rand.nextDouble() * 2 + 1.0;
 		this.setSize(2, 2);
 		physicsSlide = false;
-		life = TurnSynchronizer.synchedRandom.nextInt(100) + 600;
+		life = rand.nextInt(100) + 600;
 
-		animTime = TurnSynchronizer.synchedRandom
-				.nextInt(anims[value].length * 3);
+		animTime = rand.nextInt(anims[value].length * 3);
 
 	}
 
 	public void makeUntakeable() {
 		isTakeable = false;
-		life = 100 - TurnSynchronizer.synchedRandom.nextInt(40);
+		life = 100 - rand.nextInt(40);
 	}
 
 	public void tick() {

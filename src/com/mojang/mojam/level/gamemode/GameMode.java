@@ -46,8 +46,10 @@ public class GameMode {
 		newLevel = level;
 		darkenMap(level.width, level.height);
 		
-		setupPlayerSpawnArea();
-		setTickItems();
+		if(MojamComponent.instance.isServer()){
+			setupPlayerSpawnArea();
+			setTickItems();
+		}
 		setVictoryCondition();
 		setTargetScore();
 		return newLevel;
@@ -58,7 +60,7 @@ public class GameMode {
 		
 		bufferedImage.getRGB(0, 0, w - 16, h - 16, rgbs, 8 + 8 * w, w);
 		
-		System.out.println("Process level level dim:"+w+"x"+h);
+		//System.out.println("Process level level dim:"+w+"x"+h);
 		for (int y = 0; y < h; y++) {
 			for (int x = 0; x < w; x++) {
 				int col = rgbs[x + y * w] & 0xffffff;

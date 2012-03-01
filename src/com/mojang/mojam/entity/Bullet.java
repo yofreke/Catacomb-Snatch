@@ -9,9 +9,23 @@ public class Bullet extends Entity {
 	public Mob owner;
 	boolean hit = false;
 	public int life;
-	private int facing;
-	private float damage;
+	public int facing;
+	public float damage;
 
+	public Bullet(double x, double y){
+		//this.owner = e;
+		//pos.set(e.pos.x + xa * 4, e.pos.y + ya * 4);
+		//this.xa = xa * 6;
+		//this.ya = ya * 6;
+		this.pos.set(x, y);
+		this.setSize(4, 4);
+		physicsSlide = false;
+		life = 40;
+		//double angle = (Math.atan2(ya, xa) + Math.PI * 1.625);
+		//facing = (8 + (int) (angle / Math.PI * 4)) & 7;
+		//this.damage = damage;
+	}
+	
 	public Bullet(Mob e, double xa, double ya, float damage) {
 		this.owner = e;
 		pos.set(e.pos.x + xa * 4, e.pos.y + ya * 4);

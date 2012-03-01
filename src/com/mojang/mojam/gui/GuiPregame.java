@@ -86,26 +86,22 @@ public class GuiPregame extends GuiMenu {
 		screen.clear(0);
 		screen.blit(Art.emptyBackground, 0, 0);
 		int leftMargin = 48;
-		Font.draw(screen, "Server Map", leftMargin/2, 24);
-		Font.draw(screen, "Name:", leftMargin, 40);
-		Font.draw(screen, "Author:", leftMargin, 50);
-		Font.draw(screen, "Desc:", leftMargin, 60);
-		Font.draw(screen, "Players", leftMargin/2, 155);
+		Font.defaultFont().draw(screen, "Server Map", leftMargin/2, 24);
+		Font.defaultFont().draw(screen, "Name:", leftMargin, 40);
+		Font.defaultFont().draw(screen, "Author:", leftMargin, 50);
+		Font.defaultFont().draw(screen, "Desc:", leftMargin, 60);
+		Font.defaultFont().draw(screen, "Players", leftMargin/2, 155);
 		for(int i = 0; i < component.level.players.size(); i++){
 			Player player = component.level.players.get(i);
-			if(player.isReady) Font.setFont("");
-			else Font.setFont("red");
-			Font.draw(screen, (player.id==component.player.id?"-":"")+player.name+" "+player.getTeam(), leftMargin, 165+i*10);
+			Font f = player.isReady ? Font.defaultFont() : Font.FONT_RED;
+			f.draw(screen, (player.id==component.player.id?"-":"")+player.name+" "+player.getTeam(), leftMargin, 165+i*10);
 		}
-		Font.setFont("blue");
 		LevelInformation li = level.getInfo();
-		Font.draw(screen, li.getName(), 120, 40);
-		Font.draw(screen, li.levelAuthor, 120, 50);
-		Font.draw(screen, li.levelDescription, 120, 60);
-		Font.setFont("gray");
+		Font.FONT_BLUE.draw(screen, li.getName(), 120, 40);
+		Font.FONT_BLUE.draw(screen, li.levelAuthor, 120, 50);
+		Font.FONT_BLUE.draw(screen, li.levelDescription, 120, 60);
 		String s = li.getPath(false);
-		Font.draw(screen, s.substring(s.lastIndexOf("level")), 130, 135);
-		Font.setFont("");
+		Font.FONT_GRAY.draw(screen, s.substring(s.lastIndexOf("level")), 130, 135);
 		if(minimap != null){
 			screen.blit(minimap, leftMargin, 80);
 		}

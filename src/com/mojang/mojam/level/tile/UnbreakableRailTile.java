@@ -6,6 +6,7 @@ import com.mojang.mojam.screen.Bitmap;
 public class UnbreakableRailTile extends RailTile {
 	public static final int COLOR = 0xff969696;
 
+	public UnbreakableRailTile(){ this(new FloorTile()); }
 	public UnbreakableRailTile(Tile parent) {
 		super(parent);
 	}

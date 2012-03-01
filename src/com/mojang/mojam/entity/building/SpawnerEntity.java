@@ -22,11 +22,7 @@ public abstract class SpawnerEntity extends Building implements IEditable {
 	public int spawnTime = 0;
 
 	private int lastIndex = 0;
-
 	
-	public SpawnerEntity(double x, double y) {
-		this(0,0,0,-1);
-	}
 	/**
 	 * Constructor
 	 * 

@@ -131,7 +131,7 @@ public class LevelInformation {
 			Level l = parent;
 			if(l == null){
 				try {
-					l = new GameMode().generateLevel(this);
+					l = new GameMode().generateLevel(this, 0,0);
 				} catch (IOException e) {
 					e.printStackTrace();
 					return null;

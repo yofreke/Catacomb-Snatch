@@ -109,11 +109,11 @@ public class GameMode {
 			if(entity != null) {
 				newLevel.addEntity(entity);
 			}
-		}*/
-		Tile tile = TileID.colorToTile(color);
+		}
+		/*Tile tile = TileID.colorToTile(color);
 		if(tile != null){
 			newLevel.setTile(x, y, tile);
-		}
+		}*/
 
 	}
 	

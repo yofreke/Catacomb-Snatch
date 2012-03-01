@@ -5,7 +5,6 @@ import java.util.List;
 import com.mojang.mojam.entity.Entity;
 import com.mojang.mojam.level.Level;
 import com.mojang.mojam.math.BB;
-import com.mojang.mojam.network.TurnSynchronizer;
 import com.mojang.mojam.screen.Art;
 import com.mojang.mojam.screen.Bitmap;
 import com.mojang.mojam.screen.Screen;
@@ -16,7 +15,7 @@ public class WallTile extends Tile {
 	private static final String NAME = "WALL";
 
 	public WallTile() {
-		img = TurnSynchronizer.synchedRandom.nextInt(8);
+		img = rand.nextInt(8);
 		minimapColor = Art.wallTileColors[img][0];
 	}
 	

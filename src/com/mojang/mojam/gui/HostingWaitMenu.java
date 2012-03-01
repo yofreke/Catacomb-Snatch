@@ -37,7 +37,7 @@ public class HostingWaitMenu extends GuiMenu {
 		font.draw(screen, MojamComponent.texts.getStatic("mp.localIP") + myIpLAN, 100, 120);
 		font.draw(screen, MojamComponent.texts.getStatic("mp.externalIP") + myIpWAN, 100, 140);
 
-		Font.draw(screen, "Level name: " + TitleMenu.level.getName(), 120, 170);
+		Font.defaultFont().draw(screen, "Level name: " + TitleMenu.level.getName(), 120, 170);
 		super.render(screen);
 	}
 

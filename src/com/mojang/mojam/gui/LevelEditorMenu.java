@@ -384,7 +384,7 @@ public class LevelEditorMenu extends GuiMenu {
         newLevel();
         
 	removeText(levelName);
-        levelName = new Text(1, li.levelName, 120, 5);
+        levelName = new Text(1, li.getName(), 120, 5);
         addText(levelName);
         
         for (int y = 0; y < h; y++) {

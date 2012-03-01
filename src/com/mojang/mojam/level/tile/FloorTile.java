@@ -1,7 +1,6 @@
 package com.mojang.mojam.level.tile;
 
 import com.mojang.mojam.level.Level;
-import com.mojang.mojam.network.TurnSynchronizer;
 import com.mojang.mojam.screen.Art;
 import com.mojang.mojam.screen.Bitmap;
 import com.mojang.mojam.screen.Screen;
@@ -22,7 +21,7 @@ public class FloorTile extends Tile {
 	public static final String NAME = "FLOOR";
 
 	public FloorTile() {
-		img = TurnSynchronizer.synchedRandom.nextInt(4);
+		img = rand.nextInt(4);
 		minimapColor = Art.floorTileColors[img & 7][img / 8];
 	}
 	@Override

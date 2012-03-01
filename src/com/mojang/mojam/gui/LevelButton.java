@@ -57,7 +57,7 @@ public class LevelButton extends ClickableComponent {
 		super(x, y, WIDTH, HEIGHT);
 
 		this.id = id;
-		this.levelName = levelInfo.levelName;
+		this.levelName = levelInfo.getName();
 
 		buildMinimap(levelInfo);
 	}

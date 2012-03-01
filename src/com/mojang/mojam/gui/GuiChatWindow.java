@@ -86,13 +86,11 @@ public class GuiChatWindow {
 	}
 	
 	public void draw(Screen screen){
-		Font.setFont("gray");
 		for (int i = 0; i < toDraw; i++) {
-			Font.draw(screen, messages[i], 8, MojamComponent.GAME_HEIGHT-80-i*10);
+			Font.FONT_GRAY.draw(screen, messages[i], 8, MojamComponent.GAME_HEIGHT-80-i*10);
 		}
 		if(isActive()){
-			Font.draw(screen, entry+(component.synchronizer.getLocalTick() % 16 < 8 ? "_" : ""), 8, MojamComponent.GAME_HEIGHT-70);
+			Font.FONT_GRAY.draw(screen, entry+(component.synchronizer.getLocalTick() % 16 < 8 ? "_" : ""), 8, MojamComponent.GAME_HEIGHT-70);
 		}
-		Font.setFont("");
 	}
 }

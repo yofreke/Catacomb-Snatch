@@ -484,7 +484,7 @@ public class MojamComponent extends Canvas implements Runnable,
 		if (Options.getAsBoolean(Options.DRAW_FPS, Options.VALUE_FALSE)) {
 			Font.defaultFont().draw(screen, texts.FPS(fps), 10, 10);
 			if(player != null){
-				Font.draw(screen, player.id+" "+player.getTeam()+" "+(int)player.xto+","+(int)player.yto, 100, 10);
+				Font.defaultFont().draw(screen, player.id+" "+player.getTeam()+" "+(int)player.xto+","+(int)player.yto, 100, 10);
 			}
 		}
 
@@ -981,101 +981,131 @@ public class MojamComponent extends Canvas implements Runnable,
 				synchronizer = new TurnSynchronizer(this, null, 0, 1);
 				synchronizer.setStarted(true);
 
-			localId = 0;
-			synchronizer = new TurnSynchronizer(this, null, 0, 1);
-			synchronizer.setStarted(true);
-
-			createLevel(TitleMenu.level, TitleMenu.defaultGameMode);
-			soundPlayer.stopBackgroundMusic();
-			gameState = GAMESTATE_INGAME;
-		} else if (id == TitleMenu.SELECT_LEVEL_ID) {
-			addMenu(new LevelSelect(false));
-		} else if (id == TitleMenu.SELECT_HOST_LEVEL_ID) {
-			addMenu(new LevelSelect(true));
-		} else if (id == TitleMenu.UPDATE_LEVELS) {
-			GuiMenu menu = menuStack.pop();
-			if (menu instanceof LevelSelect) {
-				addMenu(new LevelSelect(((LevelSelect) menu).bHosting));
-			} else {
+				createLevel(TitleMenu.level, TitleMenu.defaultGameMode);
+				soundPlayer.stopBackgroundMusic();
+				gameState = GAMESTATE_INGAME;
+				break;
+				
+			case TitleMenu.SELECT_LEVEL_ID:
 				addMenu(new LevelSelect(false));
-			}
-		} else if (id == TitleMenu.HOST_GAME_ID) {
-			//addMenu(new HostingWaitMenu());
-			synchronizer = new TurnSynchronizer(this, packetLink, localId, 2);
-
-			clearMenus();
-			System.out.println("Starting server...");
-			createLevel(TitleMenu.level, TitleMenu.defaultGameMode);
-			
-			addMenu(new GuiPregame(this, level));
-			// activate network doodads
-			isMultiplayer = true;
-			isServer = true;
-			
-			try {
-				if(packetLink != null){
-					packetLink.close();
+				break;
+				
+			case TitleMenu.SELECT_HOST_LEVEL_ID:
+				addMenu(new LevelSelect(true));
+				break;
+				
+			/*case TitleMenu.UPDATE_LEVELS:
+				GuiMenu menu = menuStack.pop();
+				if (menu instanceof LevelSelect) {
+					addMenu(new LevelSelect(((LevelSelect) menu).bHosting));
+				} else {
+					addMenu(new LevelSelect(false));
 				}
-				packetLink = new NetworkPacketLink(NetworkPacketLink.SERVER_PORT);
+				break;*/
+				
+			case TitleMenu.HOST_GAME_ID:
+				//addMenu(new HostingWaitMenu());
+				synchronizer = new TurnSynchronizer(this, packetLink, localId, 2);
+	
+				clearMenus();
+				System.out.println("Starting server...");
+				createLevel(TitleMenu.level, TitleMenu.defaultGameMode);
+				
+				addMenu(new GuiPregame(this, level));
+				// activate network doodads
+				isMultiplayer = true;
+				isServer = true;
+				
 				try {
-					((NetworkPacketLink) packetLink).startWrite("localhost");
-				} catch (Exception e) {
+					if(packetLink != null){
+						packetLink.close();
+					}
+					packetLink = new NetworkPacketLink(NetworkPacketLink.SERVER_PORT);
+					try {
+						((NetworkPacketLink) packetLink).startWrite("localhost");
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					packetLink.setPacketListener(MojamComponent.this);
+					createServerState = SERVERSTATE_PREGAME;
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				packetLink.setPacketListener(MojamComponent.this);
-				createServerState = SERVERSTATE_PREGAME;
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} else if (id == TitleMenu.JOIN_GAME_ID) {
-			addMenu(new JoinGameMenu());
-		} else if (id == TitleMenu.CANCEL_JOIN_ID) {
-			popMenu();
-			if (hostThread != null) {
-				hostThread.interrupt();
-				hostThread = null;
-			}
-		} else if (id == TitleMenu.PERFORM_JOIN_ID) {
-			isMultiplayer = true;
-			isServer = false;
-			NetworkPacketLink.SEND_BUFFER_SIZE = NetworkPacketLink.BUFF_BIG;
-			
-			try {
-				localId = 1;
-				packetLink = new ClientSidePacketLink(TitleMenu.ip, 0);
-				synchronizer = new TurnSynchronizer(this, packetLink, localId,2);
-				packetLink.setPacketListener(this);
-				packetLink.sendPacket(new HandshakePacket());
-			} catch (Exception e) {
-				e.printStackTrace();
-				// System.exit(1);
-				menuStack.clear();
-				addMenu(new TitleMenu(GAME_WIDTH, GAME_HEIGHT));
-			}
-		} else if (id == TitleMenu.HOW_TO_PLAY) {
-			addMenu(new HowToPlay());
-		} else if (id == TitleMenu.OPTIONS_ID) {
-			addMenu(new OptionsMenu());
-		} else if (id == TitleMenu.SELECT_DIFFICULTY_ID) {
-			addMenu(new DifficultySelect(false));
-		} else if (id == TitleMenu.SELECT_DIFFICULTY_HOSTING_ID) {
-			addMenu(new DifficultySelect(true));
-		} else if (id == TitleMenu.KEY_BINDINGS_ID) {
-			addMenu(new KeyBindingsMenu(keys, inputHandler));
-		} else if (id == TitleMenu.EXIT_GAME_ID) {
-			System.exit(0);
-		} else if (id == TitleMenu.RETURN_ID) {
-			synchronizer.addCommand(new PauseCommand(false));
-			keys.tick();
-		} else if (id == TitleMenu.BACK_ID) {
-			popMenu();
-		} else if(id == TitleMenu.SEND_READY){
-			System.out.println("Local ready : "+localId);
-			boolean flag = !player.isReady;
-			player.isReady = flag;
-			Packet packet = new PlayerUpdatePacket();
-			if(isServer) broadcastPacket(packet);
-			else packetLink.sendPacket(packet);
+				break;
+				
+			case TitleMenu.JOIN_GAME_ID:
+				addMenu(new JoinGameMenu());
+				break;
+				
+			case TitleMenu.CANCEL_JOIN_ID:
+				popMenu();
+				if (hostThread != null) {
+					hostThread.interrupt();
+					hostThread = null;
+				}
+				break;
+				
+			case TitleMenu.PERFORM_JOIN_ID:
+				isMultiplayer = true;
+				isServer = false;
+				NetworkPacketLink.SEND_BUFFER_SIZE = NetworkPacketLink.BUFF_BIG;
+				
+				try {
+					localId = 1;
+					packetLink = new ClientSidePacketLink(TitleMenu.ip, 0);
+					synchronizer = new TurnSynchronizer(this, packetLink, localId,2);
+					packetLink.setPacketListener(this);
+					packetLink.sendPacket(new HandshakePacket());
+				} catch (Exception e) {
+					e.printStackTrace();
+					// System.exit(1);
+					menuStack.clear();
+					addMenu(new TitleMenu(GAME_WIDTH, GAME_HEIGHT));
+				}
+				break;
+				
+			case TitleMenu.HOW_TO_PLAY:
+				addMenu(new HowToPlayMenu(level != null));
+				break;
+				
+			case TitleMenu.OPTIONS_ID:
+				addMenu(new OptionsMenu(level != null));
+				break;
+				
+			case TitleMenu.SELECT_DIFFICULTY_ID:
+				addMenu(new DifficultySelect(false));
+				break;
+				
+			case TitleMenu.SELECT_DIFFICULTY_HOSTING_ID:
+				addMenu(new DifficultySelect(true));
+				break;
+				
+			case TitleMenu.KEY_BINDINGS_ID:
+				addMenu(new KeyBindingsMenu(keys, inputHandler));
+				break;
+				
+			case TitleMenu.EXIT_GAME_ID:
+				System.exit(0);
+				break;
+				
+			case TitleMenu.RETURN_ID:
+				synchronizer.addCommand(new PauseCommand(false));
+				keys.tick();
+				break;
+				
+			case TitleMenu.BACK_ID:
+				popMenu();
+				break;
+				
+			case TitleMenu.SEND_READY:
+				System.out.println("Local ready : "+localId);
+				boolean flag = !player.isReady;
+				player.isReady = flag;
+				Packet packet = new PlayerUpdatePacket();
+				if(isServer) broadcastPacket(packet);
+				else packetLink.sendPacket(packet);
+				break;
+				
 		}
 	}
 	

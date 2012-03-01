@@ -1,6 +1,7 @@
 package com.mojang.mojam.level.tile;
 
 import java.util.List;
+import java.util.Random;
 
 import com.mojang.mojam.entity.Entity;
 import com.mojang.mojam.entity.animation.LargeBombExplodeAnimation;
@@ -8,13 +9,13 @@ import com.mojang.mojam.level.IEditable;
 import com.mojang.mojam.level.Level;
 import com.mojang.mojam.math.BB;
 import com.mojang.mojam.math.BBOwner;
-import com.mojang.mojam.math.Facing;
-import com.mojang.mojam.network.TurnSynchronizer;
 import com.mojang.mojam.screen.Art;
 import com.mojang.mojam.screen.Bitmap;
 import com.mojang.mojam.screen.Screen;
 
 public abstract class Tile implements BBOwner, IEditable {
+	
+	public static Random rand = new Random();
 	public static final int HEIGHT = 32;
 	public static final int WIDTH = 32;
 
@@ -30,7 +31,7 @@ public abstract class Tile implements BBOwner, IEditable {
 	public boolean isShadowed_north_west;
     
 	public Tile() {
-		if (img == -1) img = TurnSynchronizer.synchedRandom.nextInt(4);
+		if (img == -1) img = rand.nextInt(4);
 		minimapColor = Art.floorTileColors[img & 7][img / 8];
 	}
 

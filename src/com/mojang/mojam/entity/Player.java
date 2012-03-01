@@ -5,7 +5,6 @@ import java.util.Random;
 import com.mojang.mojam.Keys;
 import com.mojang.mojam.MojamComponent;
 import com.mojang.mojam.MouseButtons;
-import com.mojang.mojam.entity.animation.EnemyDieAnimation;
 import com.mojang.mojam.Options;
 import com.mojang.mojam.entity.animation.SmokePuffAnimation;
 import com.mojang.mojam.entity.building.Building;
@@ -20,7 +19,6 @@ import com.mojang.mojam.entity.particle.Sparkle;
 import com.mojang.mojam.entity.weapon.IWeapon;
 import com.mojang.mojam.entity.weapon.Rifle;
 import com.mojang.mojam.gui.Notifications;
-import com.mojang.mojam.level.HoleTile;
 import com.mojang.mojam.level.tile.RailTile;
 import com.mojang.mojam.level.tile.Tile;
 import com.mojang.mojam.math.Vec2;
@@ -88,7 +86,7 @@ public class Player extends Mob implements LootCollector {
      */
     public Player(Keys keys, MouseButtons mouseButtons, int x, int y, int team,  int characterID) {
         super(x, y, team);
-        setId(playerId);
+        setId((short) characterID);
         this.name = "PLAYERNAME"+id;
         this.keys = keys;
         this.mouseButtons = mouseButtons;
@@ -103,7 +101,6 @@ public class Player extends Mob implements LootCollector {
         health = 5;
         psprint = 2;//1.5;
         maxTimeSprint = 99999999;//100;
-        isImmortal = true;
 
         aimVector = new Vec2(0, 1);
 

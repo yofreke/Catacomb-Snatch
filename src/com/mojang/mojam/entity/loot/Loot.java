@@ -3,11 +3,7 @@ package com.mojang.mojam.entity.loot;
 import com.mojang.mojam.MojamComponent;
 import com.mojang.mojam.entity.Entity;
 import com.mojang.mojam.entity.Player;
-import com.mojang.mojam.level.HoleTile;
-import com.mojang.mojam.network.TurnSynchronizer;
-import com.mojang.mojam.screen.Art;
-import com.mojang.mojam.screen.Bitmap;
-import com.mojang.mojam.screen.Screen;
+import com.mojang.mojam.level.tile.HoleTile;
 import com.mojang.mojam.screen.Art;
 import com.mojang.mojam.screen.Bitmap;
 import com.mojang.mojam.screen.Screen;
@@ -70,7 +66,7 @@ public Loot(double x, double y){
 		physicsSlide = false;
 		life = rand.nextInt(100) + 600;
 
-		animTime = rand.nextInt(anims[value].length * 3);
+		animationTime = rand.nextInt(animationArt[value].length * 3);
 
 	}
 	

@@ -67,7 +67,7 @@ public class StartPregamePacket extends Packet {
 	
 	public Level getLevel() {
 		System.out.println("Pregame packet level dim:"+levelWidth+"x"+levelHeight);
-		Level level = new Level(levelWidth, levelHeight).setInfo(levelInfo);
+		Level level = new Level(levelWidth, levelHeight, 0,0).setInfo(levelInfo);
 		for(int y = 0; y < level.height; y++){
 			for(int x = 0; x < level.width; x++){
 				int index = x + y * level.width;

@@ -34,7 +34,6 @@ public class Notifications {
 
 	public void add(String message, int life) {
 		notes.add(new Note(message, life));
-		System.out.println(notes.size());
 	}
 
 	public void render(Screen screen) {
@@ -43,7 +42,8 @@ public class Notifications {
 		while (it.hasNext()) {
 			i += 1;
 			Note note = it.next();
-			Font.draw(screen, note.message, (MojamComponent.GAME_WIDTH / 2) - (Font.getStringWidth(note.message) / 2), MojamComponent.GAME_HEIGHT / 5 + (i * 8 * MojamComponent.SCALE));
+			int stringWidth = Font.defaultFont().calculateStringWidth(note.message);
+			Font.defaultFont().draw(screen, note.message, (MojamComponent.GAME_WIDTH / 2) - (stringWidth / 2), MojamComponent.GAME_HEIGHT / 5 + (i * 8 * MojamComponent.SCALE));
 		}
 	}
 

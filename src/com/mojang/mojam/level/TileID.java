@@ -25,10 +25,10 @@ public class TileID {
 		registerTile((short) 6, WallTile.class, 0xff0000);
 		registerTile((short) 7, DestroyableWallTile.class, 0xff7777);
 	}
-	
+
 	/**
-	 * This must be called once so that tiles can be sent via- multiplayer.
-	 * They will need a constructor with no arguments
+	 * This must be called once so that tiles can be sent via- multiplayer. They
+	 * will need a constructor with no arguments
 	 */
 	public static void registerTile(short id, Class<? extends Tile> tileclass, int color){
 		shortToTileMap.put(id, tileclass);
@@ -36,9 +36,10 @@ public class TileID {
 		colorToTileMap.put(color, tileclass);
 		tileToColorMap.put(tileclass, color);
 	}
-	
-	public static short tileToShort(Tile tile){
-		if(!tileToShortMap.containsKey(tile.getClass())) return 0;
+
+	public static short tileToShort(Tile tile) {
+		if (!tileToShortMap.containsKey(tile.getClass()))
+			return 0;
 		return tileToShortMap.get(tile.getClass());
 	}
 	

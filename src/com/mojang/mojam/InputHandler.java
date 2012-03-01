@@ -24,13 +24,17 @@ public class InputHandler implements KeyListener {
 
 		// actions
 		initKey(keys.fire, KeyEvent.VK_SPACE);
+		initKey(keys.fireUp, KeyEvent.VK_UP);
+		initKey(keys.fireDown, KeyEvent.VK_DOWN);
+		initKey(keys.fireLeft, KeyEvent.VK_LEFT);
+		initKey(keys.fireRight, KeyEvent.VK_RIGHT);
 		initKey(keys.build, KeyEvent.VK_R);
 		initKey(keys.use, KeyEvent.VK_E);
 		initKey(keys.upgrade, KeyEvent.VK_F);
 		initKey(keys.pause, KeyEvent.VK_ESCAPE);
 		initKey(keys.screenShot, KeyEvent.VK_F2);
 		initKey(keys.fullscreen, KeyEvent.VK_F11);
-		initKey(keys.chat, KeyEvent.VK_ENTER);
+		initKey(keys.chat, KeyEvent.VK_T);
 	}
 
 	private void initKey(Key key, int defaultKeyCode) {

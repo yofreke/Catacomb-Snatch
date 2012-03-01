@@ -1,5 +1,6 @@
 package com.mojang.mojam.sound;
 
+import com.mojang.mojam.Options;
 import com.mojang.mojam.network.TurnSynchronizer;
 import java.util.*;
 
@@ -10,13 +11,18 @@ import paulscode.sound.libraries.LibraryJavaSound;
 public class SoundPlayer {
 
 	private final Class<? extends Library> libraryType;
-	private SoundSystem soundSystem;
+	public SoundSystem soundSystem;
 	private boolean oggPlaybackSupport = true;
 	private boolean wavPlaybackSupport = true;
 	private boolean muted = false;
 
-	private static final String BACKGROUND_TRACK = "background";
+    private float volume = Options.getAsFloat(Options.VOLUME, "1.0f");
+	private float musicVolume = Options.getAsFloat(Options.MUSIC, "1.0f");
+	private float soundVolume = Options.getAsFloat(Options.SOUND, "1.0f");
+
+	public static final String BACKGROUND_TRACK = "background";
 	private static final int MAX_SOURCES_PER_SOUND = 5;
+	private int nextSong = 0;
 
 	public SoundPlayer() {
 		libraryType = LibraryJavaSound.class;
@@ -38,6 +44,9 @@ public class SoundPlayer {
 		} catch (SoundSystemException ex) {
 			soundSystem = null;
 		}
+		
+		soundSystem.setMasterVolume(volume);
+        soundSystem.setVolume(BACKGROUND_TRACK, musicVolume);
 	}
 
 	private boolean hasOggPlaybackSupport() {
@@ -63,23 +72,38 @@ public class SoundPlayer {
 			String backgroundTrack = "/sound/ThemeTitle.ogg";
 			soundSystem.backgroundMusic(BACKGROUND_TRACK, SoundPlayer.class.getResource(backgroundTrack), backgroundTrack, false);
 		}
+
+        soundSystem.setVolume(BACKGROUND_TRACK, musicVolume);
 	}
 
 	public void startEndMusic() {
 		if (!isMuted() && hasOggPlaybackSupport()) {
-			if (isPlaying(BACKGROUND_TRACK))
-				stopBackgroundMusic();
+		    if (isPlaying(BACKGROUND_TRACK))
+                stopBackgroundMusic();
 
 			String backgroundTrack = "/sound/ThemeEnd.ogg";
-			soundSystem.backgroundMusic(BACKGROUND_TRACK, SoundPlayer.class.getResource(backgroundTrack), backgroundTrack, false);
+            soundSystem.backgroundMusic(BACKGROUND_TRACK, SoundPlayer.class.getResource(backgroundTrack), backgroundTrack, false);
 		}
+
+        soundSystem.setVolume(BACKGROUND_TRACK, musicVolume);
 	}
 
 	public void startBackgroundMusic() {
-		if (!isMuted() && hasOggPlaybackSupport() && !isPlaying(BACKGROUND_TRACK)) {
-			String backgroundTrack = "/sound/Background " + (TurnSynchronizer.synchedRandom.nextInt(4) + 1) + ".ogg";
-			soundSystem.backgroundMusic(BACKGROUND_TRACK, SoundPlayer.class.getResource(backgroundTrack), backgroundTrack, false);
+	    System.out.println("*** startBackgroundMusic ***");
+        if (!isMuted() && hasOggPlaybackSupport()) {
+            if (isPlaying(BACKGROUND_TRACK))
+                stopBackgroundMusic();
+
+            nextSong++;
+            if (nextSong>4) nextSong = 1;
+            //nextSong = TurnSynchronizer.synchedRandom.nextInt(4)+1;
+            String backgroundTrack = "/sound/Background " + nextSong + ".ogg";
+            System.out.println("next song: " + backgroundTrack);
+            
+            soundSystem.backgroundMusic(BACKGROUND_TRACK, SoundPlayer.class.getResource(backgroundTrack), backgroundTrack, false);
 		}
+
+        soundSystem.setVolume(BACKGROUND_TRACK, musicVolume);
 	}
 
 	public void stopBackgroundMusic() {
@@ -123,6 +147,8 @@ public class SoundPlayer {
 			soundSystem.setAttenuation(indexedSourceName, SoundSystemConfig.ATTENUATION_ROLLOFF);
 			soundSystem.setDistOrRoll(indexedSourceName, SoundSystemConfig.getDefaultRolloff());
 			soundSystem.setPitch(indexedSourceName, 1.0f);
+			soundVolume = Options.getAsFloat(Options.SOUND, "1.0f");
+			soundSystem.setVolume(indexedSourceName, soundVolume);
 			soundSystem.play(indexedSourceName);
 			return true;
 		}

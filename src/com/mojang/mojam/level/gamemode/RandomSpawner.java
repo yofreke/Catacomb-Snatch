@@ -6,7 +6,6 @@ import com.mojang.mojam.MojamComponent;
 import com.mojang.mojam.entity.Player;
 import com.mojang.mojam.entity.building.SpawnerEntity;
 import com.mojang.mojam.entity.building.Turret;
-import com.mojang.mojam.entity.mob.Team;
 import com.mojang.mojam.level.Level;
 import com.mojang.mojam.level.tile.FloorTile;
 import com.mojang.mojam.level.tile.Tile;
@@ -38,8 +37,7 @@ public class RandomSpawner implements ILevelTickItem {
 					if (level.getEntities(
 							new BB(null, x - r, y - r, x + r, y + r),
 							Turret.class).size() == 0) {
-						level.addEntity(new SpawnerEntity(x, y, Team.Neutral,
-								random.nextInt(3)));
+						level.addEntity(SpawnerEntity.getRandomSpawner(x, y));
 					}
 				}
 			}

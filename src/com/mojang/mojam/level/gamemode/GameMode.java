@@ -8,12 +8,15 @@ import java.util.Arrays;
 import javax.imageio.ImageIO;
 
 import com.mojang.mojam.MojamComponent;
+import com.mojang.mojam.entity.Entity;
 import com.mojang.mojam.entity.building.ShopItem;
 import com.mojang.mojam.entity.mob.Team;
 import com.mojang.mojam.level.DifficultyInformation;
 import com.mojang.mojam.level.Level;
 import com.mojang.mojam.level.LevelInformation;
 import com.mojang.mojam.level.TileID;
+import com.mojang.mojam.level.LevelUtils;
+import com.mojang.mojam.level.tile.FloorTile;
 import com.mojang.mojam.level.tile.SandTile;
 import com.mojang.mojam.level.tile.Tile;
 import com.mojang.mojam.level.tile.UnbreakableRailTile;
@@ -24,7 +27,7 @@ public class GameMode {
 	
 	protected Level newLevel;
 	
-	public Level generateLevel(LevelInformation li)  throws IOException {
+	public Level generateLevel(LevelInformation li,  int player1Character, int player2Character)  throws IOException {
 		BufferedImage bufferedImage;
 		//System.out.println("Loading level from file: "+li.getPath());
 		if(li.vanilla){
@@ -35,7 +38,7 @@ public class GameMode {
 		int w = bufferedImage.getWidth() + LEVEL_BORDER_SIZE;
 		int h = bufferedImage.getHeight() + LEVEL_BORDER_SIZE;
 		
-		newLevel = new Level(w, h);
+		newLevel = new Level(w, h, player1Character, player2Character);
 		newLevel.setInfo(li.copy());
 		
 		processLevelImage(bufferedImage, w, h);
@@ -63,7 +66,7 @@ public class GameMode {
 		//System.out.println("Process level level dim:"+w+"x"+h);
 		for (int y = 0; y < h; y++) {
 			for (int x = 0; x < w; x++) {
-				int col = rgbs[x + y * w] & 0xffffff;
+				int col = rgbs[x + y * w] & 0xffffffff;
 				loadColorTile(col, x, y);
 			}
 		}
@@ -74,12 +77,12 @@ public class GameMode {
 		Arrays.fill(rgbs, 0xffA8A800);
 
 		for (int y = 0 + 4; y < height - 4; y++) {
-			for (int x = 31 - 3; x < 32 + 3; x++) {
+			for (int x = (width / 2) - 4; x < (width / 2) + 3; x++) {
 				rgbs[x + y * width] = 0xff888800;
 			}
 		}
 		for (int y = 0 + 5; y < height - 5; y++) {
-			for (int x = 31 - 1; x < 32 + 1; x++) {
+			for (int x = (width / 2) - 2; x < (width / 2) + 1; x++) {
 				rgbs[x + y * width] = 0xffA8A800;
 			}
 		}
@@ -97,36 +100,27 @@ public class GameMode {
 	}
 	
 	protected void loadColorTile(int color, int x, int y) {
-		/*switch (color) {
-		case 0xA8A800:
-			newLevel.setTile(x, y, new SandTile());
-			break;			
-		case 0x969696:
-			newLevel.setTile(x, y, new UnbreakableRailTile(new FloorTile()));
-			break;			
-		case 0x888800:
-			newLevel.setTile(x, y, new UnpassableSandTile());
-			break;
-		case 0xFF7777:
-			newLevel.setTile(x, y, new DestroyableWallTile());
-			break;
-		case 0x000000:
-			newLevel.setTile(x, y, new HoleTile());
-			break;
-		case 0xff0000:
-			newLevel.setTile(x, y, new WallTile());
-			break;
-			
-		default:
-			newLevel.setTile(x, y, new FloorTile());
-			break;
+		
+		Tile tile = LevelUtils.getNewTileFromColor(color);
+		newLevel.setTile(x, y, tile);
+		
+		if(tile instanceof FloorTile) {
+			Entity entity = LevelUtils.getNewEntityFromColor(color,x,y);
+			if(entity != null) {
+				newLevel.addEntity(entity);
+			}
 		}*/
 		Tile tile = TileID.colorToTile(color);
 		if(tile != null){
 			newLevel.setTile(x, y, tile);
 		}
+
 	}
 	
+
+	
+
+
 	protected void setupPlayerSpawnArea() {
 		newLevel.maxMonsters = 1500 + (int)DifficultyInformation.calculateStrength(500);	
 		
@@ -144,8 +138,8 @@ public class GameMode {
 		newLevel.addEntity(new ShopItem(32 * (newLevel.width / 2 + .5), (newLevel.height - 4.5) * 32,
 				ShopItem.SHOP_BOMB, Team.Team1));
 		
-		newLevel.setTile(31, 7, new UnbreakableRailTile(new SandTile()));
-		newLevel.setTile(31, 63 - 7, new UnbreakableRailTile(new SandTile()));
+		newLevel.setTile((newLevel.width / 2) - 1, 7, new UnbreakableRailTile(new SandTile()));	
+	    newLevel.setTile((newLevel.width / 2) - 1, newLevel.height - 8, new UnbreakableRailTile(new SandTile()));
 	}
 	
 	protected void setTickItems() {

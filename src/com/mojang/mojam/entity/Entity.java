@@ -54,6 +54,7 @@ public abstract class Entity implements BBOwner {
 	public double prevXd, prevYd; // velocity
 	public int minimapIcon = -1;
 	public int minimapColor = -1;
+	public int team;
 
 	public Entity(){
 		this.type = EntityList.classToShort(getClass());
@@ -127,10 +128,13 @@ public abstract class Entity implements BBOwner {
 	public void render(Screen screen) {
 		screen.blit(Art.floorTiles[3][0], pos.x - Tile.WIDTH / 2, pos.y - Tile.HEIGHT / 2 - 8);
 	}
-
+	
+	public void renderTop(Screen screen) {
+	}
+	
 	protected boolean move(double xa, double ya) {
 		List<BB> bbs = level.getClipBBs(this);
-		if (physicsSlide) {
+		if (physicsSlide || (xa==0||ya==0)) {
 			boolean moved = false;
 			if (!removed)
 				moved |= partMove(bbs, xa, 0);

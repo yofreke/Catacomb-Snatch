@@ -29,6 +29,10 @@ public class Screen extends Bitmap {
 	public void blit(Bitmap bitmap, int x, int y, int w, int h) {
 		super.blit(bitmap, x + xOffset, y + yOffset, w, h);
 	}
+	
+	public void alphaBlit(Bitmap bitmap, int x, int y, int alpha) {
+		super.alphaBlit(bitmap, x + xOffset, y + yOffset, alpha);
+	}
 
 	public void colorBlit(Bitmap bitmap, double x, double y, int color) {
 		colorBlit(bitmap, (int) x, (int) y, color);
@@ -40,5 +44,9 @@ public class Screen extends Bitmap {
 
 	public void fill(int x, int y, int width, int height, int color) {
 		super.fill(x + xOffset, y + yOffset, width, height, color);
+	}
+	
+	public void rectangle(int x, int y, int width, int height, int color) {
+		super.rectangle(x + xOffset, y + yOffset, width, height, color);
 	}
 }

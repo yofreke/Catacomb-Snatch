@@ -21,7 +21,7 @@ public class EntityList {
 		registerEntity((short) 11, Bat.class);
 		registerEntity((short) 12, Mummy.class);
 		//registerEntity((short) 13, RailDroid.class);
-		//registerEntity((short) 14, Scarab.class);
+		registerEntity((short) 14, Scarab.class);
 		registerEntity((short) 15, Snake.class);
 		
 		registerEntity((short) 30, Loot.class);

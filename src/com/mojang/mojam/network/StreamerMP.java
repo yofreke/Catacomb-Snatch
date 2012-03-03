@@ -15,18 +15,16 @@ public class StreamerMP {
 	private MojamComponent component;
 	ArrayList<NetworkCommand> localPlayerCommands = new ArrayList<NetworkCommand>();
 	private PlayerTurnCommands playerCommands;
-	private final CommandListener commandListener;
 	
 	public StreamerMP(MojamComponent mc){
 		this.component = mc;
-		commandListener = component;
 		playerCommands = new PlayerTurnCommands(2);
 	}
 	
 	public void tick(){
 		
 		if(tick-- <= 0){
-			tick = 0;
+			tick = 3;
 			if(component.isServer){				
 				for (int i = 0; i < component.level.players.size(); i++) {
 					Player player = component.level.players.get(i);
@@ -36,6 +34,14 @@ public class StreamerMP {
 			} else {
 				sendFromPlayer(component.player);
 			}
+		}
+		
+		long curTime = System.currentTimeMillis();
+		if(component.isServer && curTime - NetworkPacketLink.lastReset > 1000){
+			NetworkPacketLink.lastReset = curTime;
+			MojamComponent.instance.chatWindow.addMessage("SYS: "+
+					(int) Math.floor(NetworkPacketLink.sentDataSize*0.0009765625)+" KB/s");
+			NetworkPacketLink.sentDataSize = 0;
 		}
 		
 		if(component.isServer){

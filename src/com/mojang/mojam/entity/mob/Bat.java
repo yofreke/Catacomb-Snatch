@@ -1,10 +1,8 @@
 package com.mojang.mojam.entity.mob;
 
 import java.util.Random;
-import com.mojang.mojam.level.tile.HoleTile;
 
-import com.mojang.mojam.entity.Entity;
-import com.mojang.mojam.level.DifficultyInformation;
+import com.mojang.mojam.level.tile.HoleTile;
 import com.mojang.mojam.screen.Art;
 import com.mojang.mojam.screen.Bitmap;
 import com.mojang.mojam.screen.Screen;
@@ -44,6 +42,7 @@ public class Bat extends HostileMob {
 		tick++;
 		if(isServer() && tick % 180 == 0){
 			setBRSeed(rand.nextLong());
+			needSend = true;
 		}
 
 		dir += (batRand.nextDouble() - batRand.nextDouble()) * 0.2;
@@ -55,7 +54,7 @@ public class Bat extends HostileMob {
 			yd = -yd;
 		}
 		
-		if (!move(xd, yd) && isServer()) {
+		if (!move(xd, yd)) {
 			dir += (batRand.nextDouble() - batRand.nextDouble()) * 0.8;
 		}
 		xd *= 0.2;

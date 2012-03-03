@@ -294,6 +294,7 @@ public class Level {
 		for (int i = 0; i < entities.size(); i++) {
 			Entity e = entities.get(i);
 			if (!e.removed) {
+				e.needSend = false;
 				e.tick();
 				e.postTick();
 

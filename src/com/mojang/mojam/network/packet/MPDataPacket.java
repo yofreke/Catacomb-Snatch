@@ -112,11 +112,11 @@ public class MPDataPacket extends Packet {
 			e.age = 0;
 			e.removed = removed;
 			
-			/*double xVel = e.pos.x - e.prevPos.x;
+			double xVel = e.pos.x - e.prevPos.x;
 	    	double yVel = e.pos.y - e.prevPos.y;
 			e.xd = xVel;
 			e.yd = yVel;
-			 */
+			
 			if(e instanceof Mob){
 				Mob m = (Mob) e;
 				m.setTeam(dis.readShort());
@@ -152,6 +152,11 @@ public class MPDataPacket extends Packet {
 		}
 	}
 
+	public boolean write() throws IOException {
+		write(new DataOutputStream(null));
+		return true;
+	}
+	
 	@Override
 	public void write(DataOutputStream dos) throws IOException {
 

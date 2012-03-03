@@ -1011,6 +1011,12 @@ public class MojamComponent extends Canvas implements Runnable,
 				System.out.println("Starting server...");
 				createLevel(TitleMenu.level, TitleMenu.defaultGameMode);
 				
+				// TODO: remove this
+				chatWindow.addMessage("SYS: level sim.");
+				for(int i = 0; i < 6400; i++){
+					level.tick();
+				}
+				
 				addMenu(new GuiPregame(this, level));
 				// activate network doodads
 				isMultiplayer = true;

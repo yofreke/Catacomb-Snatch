@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.mojang.mojam.MojamComponent;
-import com.mojang.mojam.network.packet.MPPlayerPosPacket;
 
 public class NetworkPacketLink implements PacketLink {
 
@@ -46,7 +45,10 @@ public class NetworkPacketLink implements PacketLink {
 	private boolean isDisconnected = false;
 
 	private PacketListener packetListener;
-
+	
+	public static int sentDataSize = 0;
+	public static long lastReset = System.currentTimeMillis();
+	
 	public NetworkPacketLink(int port) throws IOException {
 		if(port == 0)this.socket = new DatagramSocket();
 		else this.socket = new DatagramSocket(port);
@@ -175,6 +177,7 @@ public class NetworkPacketLink implements PacketLink {
 				DataOutputStream dataOut = new DataOutputStream (byteOut);
 				Packet.writePacket(sendablepacket.packet, dataOut/*outputStream*/);
 				byte[] data = byteOut.toByteArray ();
+				sentDataSize += data.length;
 				DatagramPacket packet1 = new DatagramPacket (data, data.length,
 						sendablepacket.address, sendablepacket.port);
 				//System.out.println("PACKET OUT: "+sendablepacket.packet.getId()+" "+packet1.getAddress()+":"+packet1.getPort());

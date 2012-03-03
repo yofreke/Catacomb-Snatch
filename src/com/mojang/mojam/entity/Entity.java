@@ -38,6 +38,7 @@ public abstract class Entity implements BBOwner {
 	public short id;
 	public short type;
 	public int age;
+	public boolean needSend = true;
 	
 	public Level level;
 	public boolean removed;
@@ -112,7 +113,7 @@ public abstract class Entity implements BBOwner {
 		prevYd = yd;
 		prevPos.set(pos.x, pos.y);
 
-		if(!isServer() && age++ > 2 && id < 15000 && this.id != MojamComponent.instance.player.id){
+		if(!isServer() && age++ > 4 && id < 15000 && this.id != MojamComponent.instance.player.id){
 			remove();
 		}
 	}

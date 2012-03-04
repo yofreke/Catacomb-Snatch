@@ -20,13 +20,13 @@ public class MPPlayerPosPacket extends Packet {
 	@Override
 	public void read(DataInputStream dis) throws IOException {
 		player = (Player) EntityList.idToEntityMap.get(dis.readShort());
-		player.setPos(dis.readDouble(), dis.readDouble());
+		player.setPos(dis.readFloat(), dis.readFloat());
 	}
 
 	@Override
 	public void write(DataOutputStream dos) throws IOException {
 		dos.writeShort(player.id);
-		dos.writeDouble(player.pos.x);
-		dos.writeDouble(player.pos.y);
+		dos.writeFloat((float) player.pos.x);
+		dos.writeFloat((float) player.pos.y);
 	}
 }

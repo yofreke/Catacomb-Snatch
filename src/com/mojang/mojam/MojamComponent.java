@@ -21,8 +21,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -40,7 +40,6 @@ import com.mojang.mojam.gui.Button;
 import com.mojang.mojam.gui.ButtonListener;
 import com.mojang.mojam.gui.CharacterSelectionMenu;
 import com.mojang.mojam.gui.ClickableComponent;
-import com.mojang.mojam.gui.CreditsScreen;
 import com.mojang.mojam.gui.DifficultySelect;
 import com.mojang.mojam.gui.Font;
 import com.mojang.mojam.gui.GuiChatWindow;
@@ -50,7 +49,6 @@ import com.mojang.mojam.gui.GuiPregame;
 import com.mojang.mojam.gui.HowToPlayMenu;
 import com.mojang.mojam.gui.JoinGameMenu;
 import com.mojang.mojam.gui.KeyBindingsMenu;
-import com.mojang.mojam.gui.LevelEditorMenu;
 import com.mojang.mojam.gui.LevelSelect;
 import com.mojang.mojam.gui.OptionsMenu;
 import com.mojang.mojam.gui.PauseMenu;
@@ -77,11 +75,12 @@ import com.mojang.mojam.network.TurnSynchronizer;
 import com.mojang.mojam.network.packet.ChangeKeyCommand;
 import com.mojang.mojam.network.packet.ChangeMouseButtonCommand;
 import com.mojang.mojam.network.packet.ChangeMouseCoordinateCommand;
+import com.mojang.mojam.network.packet.PlayerPositionCommand;
 import com.mojang.mojam.network.packet.ChatCommand;
-import com.mojang.mojam.network.packet.PingPacket;
 import com.mojang.mojam.network.packet.ChatPacket;
 import com.mojang.mojam.network.packet.HandshakePacket;
 import com.mojang.mojam.network.packet.HandshakeResponse;
+import com.mojang.mojam.network.packet.PingPacket;
 import com.mojang.mojam.network.packet.PlayerUpdatePacket;
 import com.mojang.mojam.network.packet.SetPlayerPacket;
 import com.mojang.mojam.network.packet.StartGamePacket;
@@ -167,6 +166,9 @@ public class MojamComponent extends Canvas implements Runnable,
 	private static File mojamDir = null;
 	public GuiChatWindow chatWindow = new GuiChatWindow(this);
 	public StreamerMP clientStreamer = new StreamerMP(this);
+	
+	private int tickNumber = 0;
+	private boolean isKeyframe = false;
 
 	public MojamComponent() {
 		String localeString = Options.get(Options.LOCALE, "en");
@@ -580,6 +582,8 @@ public class MojamComponent extends Canvas implements Runnable,
 	}
 
 	private void tick() {
+		isKeyframe = tickNumber++ % 5 == 0;
+		
 		//Not-In-Focus-Pause
 		if (level != null && !isMultiplayer && !paused && !this.isFocusOwner()) {
 			keys.release();
@@ -628,7 +632,7 @@ public class MojamComponent extends Canvas implements Runnable,
 			}
 		}
 
-		clientStreamer.tick();
+		clientStreamer.tick(isKeyframe);
 		
 		if(level == null || (menuStack.size() > 0)) {
 			mouseButtons.tick();
@@ -669,7 +673,7 @@ public class MojamComponent extends Canvas implements Runnable,
 						synchronizer.addCommand(new PauseCommand(true));
 					}
 					
-					level.tick();
+					level.tick(isKeyframe);
 					if (isMultiplayer) {
 						tickChat();
 					}
@@ -822,6 +826,9 @@ public class MojamComponent extends Canvas implements Runnable,
 			//System.out.println("KEY: "+ckc.getKey()+ckc.getNextState());
 			player.keys.getAll().get(ckc.getKey()).nextState = ckc
 					.getNextState();
+		} else if(packet instanceof PlayerPositionCommand){
+			PlayerPositionCommand ppc = (PlayerPositionCommand) packet;
+			player.setPos(ppc.getX(), ppc.getY());
 		}
 		
 		if (packet instanceof ChangeMouseButtonCommand) {
@@ -961,6 +968,10 @@ public class MojamComponent extends Canvas implements Runnable,
 			handleAction(button.getId());
 		}
 	}
+	
+	@Override
+	public void buttonHovered(ClickableComponent clickableComponent) {		
+	}
 
 	public void handleAction(int id) {
 		switch (id) {
@@ -1014,7 +1025,7 @@ public class MojamComponent extends Canvas implements Runnable,
 				// TODO: remove this
 				chatWindow.addMessage("SYS: level sim.");
 				for(int i = 0; i < 6400; i++){
-					level.tick();
+					level.tick(false);
 				}
 				
 				addMenu(new GuiPregame(this, level));

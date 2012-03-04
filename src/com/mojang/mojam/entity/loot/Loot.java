@@ -10,6 +10,7 @@ import com.mojang.mojam.screen.Screen;
 
 public class Loot extends Entity {
 	public double xMovement, yMovement, accelerationDirectionDelta;
+	private double prevXMovement, prevYMovement;
 	public double accelerationDirection;
 	public Entity owner;
 	public int life;
@@ -98,7 +99,7 @@ public Loot(double x, double y){
 				remove();
 		}
 		
-		if (isTakeable) {
+		if (isTakeable && isServer()) {
 			double fixDistance = 100;
 			int absorbDistance = 16;
 			for (Entity entity : level.getEntities(getBB().grow(fixDistance))) {
@@ -142,6 +143,13 @@ public Loot(double x, double y){
 					}
 				}
 			}
+		}
+		
+		double d = 0.01;
+		if(Math.abs(prevXMovement-xMovement) > d || Math.abs(prevYMovement-yMovement) > d){
+			prevXMovement = xMovement;
+			prevYMovement = yMovement;
+			needSend = true;
 		}
 	}
 

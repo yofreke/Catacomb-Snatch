@@ -28,13 +28,15 @@ public class MPDataPacket extends Packet {
 	public MojamComponent component;
 	public short playerId;
 	private ArrayList<Entity> toSend;
+	private boolean isKeyframe;
 
 	public MPDataPacket(){
 		this.component = MojamComponent.instance;
 	}
-	public MPDataPacket(MojamComponent component, short playerId){
+	public MPDataPacket(MojamComponent component, short playerId, boolean isKeyframe){
 		this.component = component;
 		this.playerId = playerId;
+		this.isKeyframe = isKeyframe;
 
 		Player player = component.getPlayer(playerId);
 		int xScroll = (int) (player.pos.x - MojamComponent.GAME_WIDTH / 2);
@@ -84,17 +86,23 @@ public class MPDataPacket extends Packet {
 
 	@Override
 	public void read(DataInputStream dis) throws IOException {
+		isKeyframe = dis.readBoolean();
 		int size = dis.readShort();
 		/*if(component.level != null && System.currentTimeMillis() % 1000 < 30){
 			System.out.println("MPDataPacket .. read size "+size);
 		}*/
 		for(int i = 0; i < size; i++) {
 			short id = dis.readShort();
+			boolean needSend = dis.readBoolean();
+			Entity e = EntityList.idToEntityMap.get(id);
+			if(!needSend && !isKeyframe){
+				if(e != null) e.updateAge = 0;
+				continue;
+			}
 			short type = dis.readShort();
 			double xPos = dis.readFloat();
 			double yPos = dis.readFloat();
 			boolean removed = dis.readBoolean();
-			Entity e = EntityList.idToEntityMap.get(id);
 			if(e == null){
 				// make the entity, because it hasnt been created yet
 				e = EntityList.shortToEntity(type, xPos, yPos);
@@ -102,21 +110,21 @@ public class MPDataPacket extends Packet {
 					throw(new RuntimeException("BAD ENTITY: "+id+" : "+type));
 				}
 				if(component.level != null) component.level.addEntity(e);
+				e.setId(id);
 			} else {
 				e.setPos(xPos, yPos);		
 			}
 			if(e.type != type){
 				System.out.println("MPDataPacket TYPE MISMATCH: ("+id+" "+type+") ("+e.id+" "+e.type+")");
 			}
-			e.setId(id);
-			e.age = 0;
+			e.updateAge = 0;
 			e.removed = removed;
 			
-			double xVel = e.pos.x - e.prevPos.x;
+			/*double xVel = e.pos.x - e.prevPos.x;
 	    	double yVel = e.pos.y - e.prevPos.y;
 			e.xd = xVel;
 			e.yd = yVel;
-			
+			*/
 			if(e instanceof Mob){
 				Mob m = (Mob) e;
 				m.setTeam(dis.readShort());
@@ -165,9 +173,14 @@ public class MPDataPacket extends Packet {
 			//System.out.println(player.name+": "+mobs.size()+"/"+visibleEntities.size()+" OF "+component.level.entities.size());
 		}
 
+		dos.writeBoolean(isKeyframe);
 		dos.writeShort(toSend.size());
 		for(Entity e : toSend){
 			dos.writeShort(e.id);
+			dos.writeBoolean(e.needSend);
+			if(!e.needSend && !isKeyframe){
+				continue;
+			}
 			dos.writeShort(e.type);
 			dos.writeFloat((float) e.pos.x);
 			dos.writeFloat((float) e.pos.y);

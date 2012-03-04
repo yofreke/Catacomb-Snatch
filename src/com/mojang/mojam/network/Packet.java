@@ -17,6 +17,7 @@ import com.mojang.mojam.network.packet.HandshakeResponse;
 import com.mojang.mojam.network.packet.MPDataPacket;
 import com.mojang.mojam.network.packet.MPPlayerPosPacket;
 import com.mojang.mojam.network.packet.MPUpdateIDPacket;
+import com.mojang.mojam.network.packet.PlayerPositionCommand;
 import com.mojang.mojam.network.packet.PlayerUpdatePacket;
 import com.mojang.mojam.network.packet.SetPlayerPacket;
 import com.mojang.mojam.network.packet.ChatCommand;
@@ -61,6 +62,7 @@ public abstract class Packet {
 		map(104, ChangeMouseButtonCommand.class);
 		map(105, ChangeMouseCoordinateCommand.class);
 		map(106, ChatCommand.class);
+		map(107, PlayerPositionCommand.class);
 	}
 
 	private InetAddress recvAddress;

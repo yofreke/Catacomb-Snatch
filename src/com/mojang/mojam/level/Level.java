@@ -285,7 +285,7 @@ public class Level {
 		}
 	}
 
-	public void tick() {
+	public void tick(boolean isKeyframe) {
 		////////System.out.println((MojamComponent.instance.isServer?"server":"client")+":"+tickItems.size());
 		for(int i = 0; i < tickItems.size(); i++) {
 			tickItems.get(i).tick(this);
@@ -293,8 +293,12 @@ public class Level {
 
 		for (int i = 0; i < entities.size(); i++) {
 			Entity e = entities.get(i);
+			if(e == null){
+				System.out.println("LEVEL tick() .. null entity");
+				continue;
+			}
 			if (!e.removed) {
-				e.needSend = false;
+				if(isKeyframe) e.needSend = false;
 				e.tick();
 				e.postTick();
 

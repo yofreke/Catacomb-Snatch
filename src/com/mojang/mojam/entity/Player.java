@@ -32,7 +32,14 @@ import com.mojang.mojam.screen.Screen;
  * Implements the player entity
  */
 public class Player extends Mob implements LootCollector {
-    public static int COST_RAIL;    public static int COST_DROID;    public static int COST_REMOVE_RAIL;    public int REGEN_INTERVAL = 60 * 3;    public Client client;    public boolean isReady;
+    public static int COST_RAIL;
+    public static int COST_DROID;
+    public static int COST_REMOVE_RAIL;
+    public int REGEN_INTERVAL = 60 * 3;
+    
+    public Client client;
+    public boolean isReady;
+    
     public String name = "";
     public int plevel;
     public double pexp;
@@ -443,7 +450,8 @@ public class Player extends Mob implements LootCollector {
         
         if (!dead
                 && (carrying == null && fireKeyIsDown()
-                || carrying == null && mouseButtons.isDown(mouseFireButton))) {
+                || carrying == null && mouseButtons.isDown(mouseFireButton))
+                && isServer()) {
             wasShooting = true;
             if (takeDelay > 0) {
                 takeDelay--;

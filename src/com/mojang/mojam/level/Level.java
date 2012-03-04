@@ -199,6 +199,10 @@ public class Level {
 				List<Entity> entities = entityMap[x + y * width];
 				for (int i = 0; i < entities.size(); i++) {
 					Entity e = entities.get(i);
+					if(e == null){
+						System.out.println("Level getEntities() .. null entity");
+						continue;
+					}
 					if (e.removed)
 						continue;
 					if (e.intersects(xx0, yy0, xx1, yy1)) {
@@ -508,6 +512,10 @@ public class Level {
 
 		for (int i = 0; i < entities.size(); i++) {
 			Entity e = entities.get(i);
+			if(e == null){
+				System.out.println("Level render() .. null entity");
+				continue;
+			}
 			if (!e.removed) {
 				if (e.minimapIcon >= 0) {
 					int x = (int) (e.pos.x / Tile.WIDTH);

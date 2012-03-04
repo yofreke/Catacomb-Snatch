@@ -16,6 +16,8 @@ import com.mojang.mojam.network.packet.TurnPacket;
 
 public class StreamerMP {
 	
+	public static final int SEND_RATE = 5;
+	
 	private int tick = 0;
 	private MojamComponent component;
 	ArrayList<NetworkCommand> localPlayerCommands = new ArrayList<NetworkCommand>();
@@ -31,7 +33,7 @@ public class StreamerMP {
 	public void tick(boolean isKeyframe){
 		
 		if(tick-- == 0 || isKeyframe){
-			tick = 3;
+			tick = SEND_RATE;
 			if(component.isServer){				
 				for (int i = 0; i < component.level.players.size(); i++) {
 					Player player = component.level.players.get(i);
@@ -53,8 +55,8 @@ public class StreamerMP {
 		
 		if(component.isServer){
 			MPUpdateIDPacket.tick(component);
-		} else {
-			addPlayerCommands(component.player);
+		} else if(addPlayerCommands(component.player)){
+			sendPlayerCommands(component.player);
 		}
 		
 		for (Player p : component.playerMap.values()) {
@@ -72,13 +74,15 @@ public class StreamerMP {
 				packet.getTurnNumber(), packet.getPlayerCommandList());
 	}
 	
-	public void addPlayerCommands(Player player){
-		if(player == null) return;
+	public boolean addPlayerCommands(Player player){
+		if(player == null) return false;
+		boolean flag = false;
 		
 		for (int index = 0; index < player.mouseButtons.currentState.length; index++) {
 			boolean nextState = player.mouseButtons.nextState[index];
 			if (player.mouseButtons.isDown(index) != nextState) {
 				addCommand(new ChangeMouseButtonCommand(index,nextState));
+				flag = true;
 			}
 		}
 		
@@ -88,14 +92,18 @@ public class StreamerMP {
 			if (key.isDown != nextState) {
 				//System.out.println("client sendkey: "+key.name+":"+key.nextState);
 				addCommand(new ChangeKeyCommand(index, nextState));
+				flag = true;
 			}
 		}
+		return flag;
 	}
 	
 	public void sendFromPlayer(Player player){
 		if(component.packetLink == null || component.player == null) return;
-		
-		
+		sendPlayerCommands(component.player);
+		//component.packetLink.sendPacket(new MPPlayerPosPacket(component.player));		
+	}
+	public void sendPlayerCommands(Player player){
 		addCommand(new ChangeMouseCoordinateCommand(player.mouseButtons.getX(), 
 				player.mouseButtons.getY(), player.mouseButtons.mouseHidden));
 		
@@ -103,8 +111,6 @@ public class StreamerMP {
 		component.packetLink.sendPacket(new TurnPacket(component.getLocalId(), 0, localPlayerCommands));
 		
 		localPlayerCommands.clear();
-		
-		//component.packetLink.sendPacket(new MPPlayerPosPacket(component.player));		
 	}
 	public void addCommand(NetworkCommand cmd){
 		localPlayerCommands.add(cmd);

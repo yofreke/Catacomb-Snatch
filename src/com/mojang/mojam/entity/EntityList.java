@@ -17,7 +17,7 @@ public class EntityList {
 	private static HashMap<Class<? extends Entity>, Short> tileToShortMap = new HashMap<Class<? extends Entity>, Short>();
 	
 	static {
-		//registerEntity((short) 1, Player.class);
+		registerEntity((short) 1, Player.class);
 		registerEntity((short) 11, Bat.class);
 		registerEntity((short) 12, Mummy.class);
 		//registerEntity((short) 13, RailDroid.class);

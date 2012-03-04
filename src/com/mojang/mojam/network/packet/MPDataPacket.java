@@ -29,6 +29,9 @@ public class MPDataPacket extends Packet {
 	public short playerId;
 	private ArrayList<Entity> toSend;
 	private boolean isKeyframe;
+	
+	public static long lastTime = System.currentTimeMillis();
+	public static int readCount = 0;
 
 	public MPDataPacket(){
 		this.component = MojamComponent.instance;
@@ -41,9 +44,9 @@ public class MPDataPacket extends Packet {
 		Player player = component.getPlayer(playerId);
 		int xScroll = (int) (player.pos.x - MojamComponent.GAME_WIDTH / 2);
 		int yScroll = (int) (player.pos.y - (MojamComponent.GAME_HEIGHT - 24) / 2);
-		Set<Entity> entityList = getEntitiesToSend(component.level, xScroll - Tile.WIDTH, yScroll
-				- Tile.HEIGHT, xScroll + MojamComponent.GAME_WIDTH -+Tile.WIDTH, yScroll
-				+ MojamComponent.GAME_HEIGHT + Tile.HEIGHT);
+		Set<Entity> entityList = getEntitiesToSend(component.level, xScroll /*- Tile.WIDTH*/, yScroll
+				/*- Tile.HEIGHT*/, xScroll + MojamComponent.GAME_WIDTH /*+ Tile.WIDTH*/, yScroll
+				+ MojamComponent.GAME_HEIGHT /*+ Tile.HEIGHT*/);
 		toSend = new ArrayList<Entity>();
 		Iterator<Entity> iter = entityList.iterator();
 		while (iter.hasNext()) {
@@ -86,6 +89,8 @@ public class MPDataPacket extends Packet {
 
 	@Override
 	public void read(DataInputStream dis) throws IOException {
+		int skipped = 0;
+		
 		isKeyframe = dis.readBoolean();
 		int size = dis.readShort();
 		/*if(component.level != null && System.currentTimeMillis() % 1000 < 30){
@@ -97,11 +102,14 @@ public class MPDataPacket extends Packet {
 			Entity e = EntityList.idToEntityMap.get(id);
 			if(!needSend && !isKeyframe){
 				if(e != null) e.updateAge = 0;
+				skipped++;
 				continue;
 			}
 			short type = dis.readShort();
 			double xPos = dis.readFloat();
 			double yPos = dis.readFloat();
+			//double xVel = dis.readFloat();
+			//double yVel = dis.readFloat();
 			boolean removed = dis.readBoolean();
 			if(e == null){
 				// make the entity, because it hasnt been created yet
@@ -117,6 +125,8 @@ public class MPDataPacket extends Packet {
 			if(e.type != type){
 				System.out.println("MPDataPacket TYPE MISMATCH: ("+id+" "+type+") ("+e.id+" "+e.type+")");
 			}
+			//e.xd = xVel;
+			//e.yd = yVel;
 			e.updateAge = 0;
 			e.removed = removed;
 			
@@ -151,12 +161,22 @@ public class MPDataPacket extends Packet {
 			} else if(e instanceof SpawnerEntity){
 				SpawnerEntity s = (SpawnerEntity) e;
 				s.type = dis.readShort();
+			} 
+			if(e instanceof Player){
+				Player p = (Player) e;
+				p.setFacing(dis.readShort());
 			}
 
 		}
-
-		if(component.level != null && System.currentTimeMillis() % 1000 < 30){
-			System.out.println("Recieve done, "+size+" OF "+component.level.entities.size());
+		
+		readCount++;
+		long curTime = System.currentTimeMillis();
+		if(!component.isServer && component.level != null && curTime - lastTime > 1000){
+			System.out.println("Recieve done, "+size+"/"+component.level.entities.size());
+			System.out.println("  Skipped: "+skipped+"/"+size+(isKeyframe?" (keyframe)":""));
+			System.out.println("  Reads per second: "+((double) readCount / ((curTime - lastTime) / 1000)));
+			lastTime = curTime;
+			readCount = 0;
 		}
 	}
 
@@ -184,6 +204,8 @@ public class MPDataPacket extends Packet {
 			dos.writeShort(e.type);
 			dos.writeFloat((float) e.pos.x);
 			dos.writeFloat((float) e.pos.y);
+			//dos.writeFloat((float) e.xd);
+			//dos.writeFloat((float) e.yd);
 			dos.writeBoolean(e.removed);
 
 			if(e instanceof Mob){
@@ -207,6 +229,10 @@ public class MPDataPacket extends Packet {
 			} else if(e instanceof SpawnerEntity){
 				SpawnerEntity s = (SpawnerEntity) e;
 				dos.writeShort(s.type);
+			} 
+			if(e instanceof Player){
+				Player p = (Player) e;
+				dos.writeShort(p.getFacing());
 			}
 		}
 	}

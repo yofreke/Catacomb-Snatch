@@ -82,7 +82,10 @@ public class Player extends Mob implements LootCollector {
     boolean isImmortal;
     private int characterID;
 
-    public Player(double x, double y){    	this(new Keys(), new MouseButtons(), (int) x, (int) y, Team.Neutral, (short) 0);    }    /**
+    public Player(double x, double y){
+    	this(new Keys(), new MouseButtons(), (int) x, (int) y, Team.Neutral, (short) 0);	
+    }    
+    /**	
      * Constructor
      * 
      * @param keys Key bindings for this player
@@ -774,6 +777,9 @@ public class Player extends Mob implements LootCollector {
     public void setFacing(int facing) {
         this.facing = facing;
     }
+    public int getFacing(){
+    	return facing;
+    }
 
     @Override
     protected boolean shouldBlock(Entity e) {
@@ -861,6 +867,7 @@ public class Player extends Mob implements LootCollector {
      * Update player orientation for rendering
      */
     public void updateFacing() {
+    	if(!isServer() && !equals(MojamComponent.instance.player)) return;
         facing = (int) ((Math.atan2(-aimVector.x, aimVector.y) * 8 / (Math.PI * 2) + 8.5)) & 7;
     }
 

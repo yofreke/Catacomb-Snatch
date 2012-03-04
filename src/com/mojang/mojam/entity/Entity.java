@@ -10,6 +10,7 @@ import com.mojang.mojam.level.tile.Tile;
 import com.mojang.mojam.math.BB;
 import com.mojang.mojam.math.BBOwner;
 import com.mojang.mojam.math.Vec2;
+import com.mojang.mojam.network.StreamerMP;
 import com.mojang.mojam.screen.Art;
 import com.mojang.mojam.screen.Screen;
 
@@ -113,7 +114,7 @@ public abstract class Entity implements BBOwner {
 		prevYd = yd;
 		prevPos.set(pos.x, pos.y);
 
-		if(!isServer() && updateAge++ > 4 && id < 15000 && this.id != MojamComponent.instance.player.id){
+		if(!isServer() && updateAge++ > StreamerMP.SEND_RATE && id < 15000 && this.id != MojamComponent.instance.player.id){
 			remove();
 		}
 	}

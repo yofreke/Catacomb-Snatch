@@ -582,7 +582,7 @@ public class MojamComponent extends Canvas implements Runnable,
 	}
 
 	private void tick() {
-		isKeyframe = tickNumber++ % 5 == 0;
+		isKeyframe = tickNumber++ % 20 == 0;
 		
 		//Not-In-Focus-Pause
 		if (level != null && !isMultiplayer && !paused && !this.isFocusOwner()) {
